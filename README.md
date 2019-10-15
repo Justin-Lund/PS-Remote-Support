@@ -20,9 +20,11 @@ If your company doesn't use CMRC for remote support, you can replace that option
 * Access the filesystem of remote computer
 
 * Fix Printer Issues
+
 *This option will stop the print spooler service, clear the local (for the target computer) printer cache, delete Xerox Global Print Drivers via the registry, and restart the printer spooler service. The reason for clearing out the drivers is due to some problems I had been running into with these drivers, and this was the only way to fix it. Affected computers would automatically download the drivers again. However if this problem isn't affecting your organization, you can simply remove that line from the script.*
 
 * Fix Failing Updates
+
 *This option will fix failing SCCM Software Center updates on a user's computer by stopping the services wuauserv & ccmexec, clearing out C:\Windows\SoftwareDistribution, and restarting the services.*
 
 

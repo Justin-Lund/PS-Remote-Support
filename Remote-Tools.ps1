@@ -33,7 +33,7 @@ function GetMenu {
     "11) Fix Printers" 
     "12) Fix Failing Updates" 
     "13) Invoke Group Policy Update"
-	"14) Access C:\ of Remote Computer"
+    "14) Access C:\ of Remote Computer"
     ""
     "X) Exit The program" 
     "" 

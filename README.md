@@ -35,3 +35,12 @@ There are 2 options to run the script:
 
 2) Save both the PowerShell script and the batch file, and use the batch file to launch the PowerShell script. Edit the batch file to point to wherever you save the PowerShell script. You can also have multiple people run off of the same script by saving the script on a network location, pointing the batch file to the script, and distributing it to multiple people.
 This can be useful if you want to customize the script & continually update it, so that the main script doesn't have to be redistributed after every update.
+
+
+# To Do/In Progress:
+
+* Remote network drive mappings (~90% done as of 10/18/2019, will be implemented soon)
+* Improve "Find Computer Information" by pulling the same info without the "systeminfo" command, as this wastes time pulling KBs installed on the computer, and is just truncated out after
+* Improved ping - provide computer-based options after pinging a device
+* Ability to cancel a ping or other commands without closing the entire script
+* Option to create batch files on end-user's computers - this is to provide them with the "User Command Tools" without connecting to their computer, allowing them to run local troubleshooting options themselves (https://github.com/Justin-Lund/IT-Support-Batch-Files/)

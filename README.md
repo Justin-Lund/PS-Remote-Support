@@ -18,8 +18,8 @@ If your company doesn't use CMRC for remote support, you can replace that option
 * Get a list of all installed programs on a remote computer
 * Access the filesystem of remote computer
 
-* Invoke group policy update on a remote computer
 * Remotely map network drives
+* Invoke group policy update
 
 * Fix Printer Issues
 

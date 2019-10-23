@@ -8,6 +8,7 @@ If your company doesn't use CMRC for remote support, you can replace that option
 
 
 ## Functions
+*All of the troubleshooting options work remotely, eliminating the need to remotely take control of a user's computer*
 
 * Launch CMRC, Active Directory, & PowerShell
 * Find user account information *(Displays information such as when a user's password expires)*
@@ -15,17 +16,17 @@ If your company doesn't use CMRC for remote support, you can replace that option
 
 * Find computer information *(Displays information about a remote PC, including the last reboot time)*
 * Ping a device
-* Get a list of all installed programs on a remote computer
-* Access the filesystem of remote computer
+* Get a list of all installed programs
+* Access a computer's filesystem
 
-* Remotely map network drives
-* Invoke group policy update
+* Map network drives
+* Invoke group policy updates
 
-* Fix Printer Issues
+* Fix printer issues
 
 *This option will stop the print spooler service, clear the local (for the target computer) printer cache, delete Xerox Global Print Drivers via the registry, and restart the printer spooler service. The reason for clearing out the drivers is due to some problems I had been running into with these drivers, and this was the only way to fix it. Affected computers would automatically download the drivers again. However if this problem isn't affecting your organization, you can simply remove that line from the script.*
 
-* Fix Failing Updates
+* Fix failing updates
 
 *This option will fix failing SCCM Software Center updates on a user's computer by stopping the services wuauserv & ccmexec, clearing out C:\Windows\SoftwareDistribution, and restarting the services.*
 

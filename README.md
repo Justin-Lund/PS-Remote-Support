@@ -42,8 +42,8 @@ This can be useful if you want to customize the script & continually update it, 
 
 # To Do/In Progress:
 
-* Remote network drive mappings (~90% done as of 10/18/2019, will be implemented soon)
-* Improve "Find Computer Information" by pulling the same info without the "systeminfo" command, as this wastes time pulling KBs installed on the computer, and is just truncated out after
 * Improved ping - provide computer-based options after pinging a device
+* Add the option to unlock a user's account if they show as locked when using the "Find User Account Information" option
+* Improve "Find Computer Information" by pulling the same info without the "systeminfo" command, as this wastes time pulling KBs installed on the computer, and is just truncated out after
 * Ability to cancel a ping or other commands without closing the entire script
 * Option to create batch files on end-user's computers - this is to provide them with the "User Command Tools" without connecting to their computer, allowing them to run local troubleshooting options themselves (https://github.com/Justin-Lund/IT-Support-Batch-Files/)

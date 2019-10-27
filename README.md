@@ -24,7 +24,9 @@ If your company doesn't use CMRC for remote support, you can replace that option
 
 * Fix printer issues
 
-*This option will stop the print spooler service, clear the local (for the target computer) printer cache, delete Xerox Global Print Drivers via the registry, and restart the printer spooler service. The reason for clearing out the drivers is due to some problems I had been running into with these drivers, and this was the only way to fix it. Affected computers would automatically download the drivers again. However if this problem isn't affecting your organization, you can simply remove that line from the script.*
+*This option will stop the print spooler service, clear the local (for the target computer) printer cache, delete Xerox Global Print Driver registry entries, and restart the printer spooler service.*
+
+*The reason for clearing out the Xerox registry entries is that I was running into a fair amount of computers receiving the error code 0x000003eb when trying to reinstall printers, and this registry edit is the fix for that problem. The fix is specific to Xerox printers - if you receive the same error code with another printer/driver, you need to delete the corresponding registry key in the same registry location. However, if this problem isn't affecting your organization, you can simply remove that line from the script.*
 
 * Fix failing updates
 

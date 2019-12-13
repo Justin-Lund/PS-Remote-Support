@@ -1,4 +1,4 @@
-# IT Support PowerShell Script v1.1
+# IT Support PowerShell Script v1.2
 *PowerShell Script for Remote Support & Administration*
 
 This script assists with user & computer administration, launching programs, & remote troubleshooting.
@@ -12,6 +12,7 @@ If your company doesn't use CMRC for remote support, you can replace that option
 
 * Launch CMRC, Active Directory, & PowerShell
 * Find user account information *(Displays information such as when a user's password expires)*
+*Gives you the option to unlock a user if they're currently showing as locked out*
 * See who's currently logged on to a computer
 
 * Find computer information *(Displays information about a remote PC, including the last reboot time)*
@@ -43,7 +44,6 @@ This can be useful if you want to customize the script & continually update it, 
 # To Do/In Progress:
 
 * Improved ping - provide computer-based options after pinging a device
-* Add the option to unlock a user's account if they show as locked when using the "Find User Account Information" option
 * Improve "Find Computer Information" by pulling the same info without the "systeminfo" command, as this wastes time pulling KBs installed on the computer, and is just truncated out after
 * Ability to cancel a ping or other commands without closing the entire script
 * Option to create batch files on end-user's computers - this is to provide them with the "User Command Tools" without connecting to their computer, allowing them to run local troubleshooting options themselves (https://github.com/Justin-Lund/IT-Support-Batch-Files/)

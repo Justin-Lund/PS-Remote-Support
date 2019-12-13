@@ -12,7 +12,9 @@ If your company doesn't use CMRC for remote support, you can replace that option
 
 * Launch CMRC, Active Directory, & PowerShell
 * Find user account information *(Displays information such as when a user's password expires)*
+
 *Gives you the option to unlock a user if they're currently showing as locked out*
+
 * See who's currently logged on to a computer
 
 * Find computer information *(Displays information about a remote PC, including the last reboot time)*

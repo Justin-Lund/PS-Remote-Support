@@ -1,5 +1,5 @@
 ######################################################### 
-#         Powershell Remote Support Tool V1.1           # 
+#         Powershell Remote Support Tool V1.2           # 
 #                Created By: Justin Lund                # 
 #             https://github.com/Justin-Lund/           # 
 ######################################################### 
@@ -117,6 +117,28 @@ function Test-DriveLetter {
 }
 
 
+function YN-Prompt {
+    $Confirmation = Read-Host "[Y/N]"
+    While ($Confirmation -ne "Y")
+    {
+        #If user types N, go back to main menu
+        If ($Confirmation -eq 'N')
+        {
+
+        Pause
+        Get-Menu
+        }
+
+        #Re-Prompt for Y/N if user doesn't type Y or N
+        $Confirmation = Read-Host "Please type Y or N"
+
+        Write-Host ""
+    }
+
+    #If user typed Y, proceed
+}  
+
+
 function User-Logout {
     $LogoutSession = {
          $ErrorActionPreference = 'Stop'
@@ -205,8 +227,29 @@ function Get-MenuBackend {
 			$Username = Read-Host "Please enter a username"
 			""
 			
+            $LockedOutStatus = Get-ADUser $Username -Properties * | Select-Object LockedOut
+            $UserLockedOut = $LockedOutStatus.LockedOut
+
             net user $Username /domain | findstr /i /c:"User name" /c:"Full Name" /c:"Comment" /c:"Account Active" /c:"Account Expires" /c:"Password Last Set" /c:"Password Expires" /c:"Password changeable" /c:"Last logon"
 			
+            Write-Host ""
+
+
+            If ($UserLockedOut -eq $True)
+                {
+                    Write-Host "User is locked out. Unlock the user?"
+                    YN-Prompt #Only continues if the user presses Y
+        
+                    Unlock-ADAccount -Identity $Username
+                    Write-Host "User unlocked."
+                }
+
+            Else
+                {
+                    #If user was not locked out, continue
+                }
+
+
 			Pause
 			Get-Menu
           } 
@@ -287,7 +330,7 @@ function Get-MenuBackend {
           } 
 
 
-        11 { #Map Network Drive
+		11 { #Map Network Drive
             $ComputerName = Read-Host "Enter the computer name"
             
             Test-Ping
@@ -343,19 +386,10 @@ function Get-MenuBackend {
             Create-NetworkShare
 
             #Logout confirmation
-            $Confirmation = Read-Host "The user must log out for the drive to show up. Log user out? [Y/N]"
-            While ($Confirmation -ne "Y")
-            {
-                If ($Confirmation -eq 'N')
-                {
-                Pause
-                Get-Menu
-                }
-                $Confirmation = Read-Host "Log user out? [Y/N]"
-                Write-Host ""
-            }
-
-			User-Logout
+            Write-Host "The user must log out for the drive to show up. Log user out? [Y/N]"
+            
+            YN-Prompt #Only continues if the user presses Y
+            User-Logout
 
 			Pause
 			Get-Menu

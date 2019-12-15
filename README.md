@@ -1,4 +1,4 @@
-# IT Support PowerShell Script v1.2
+# IT Support PowerShell Script v1.3
 *PowerShell Script for Remote Support & Administration*
 
 This script assists with user & computer administration, launching programs, & remote troubleshooting.
@@ -17,8 +17,16 @@ If your company doesn't use CMRC for remote support, you can replace that option
 
 * See who's currently logged on to a computer
 
-* Find computer information *(Displays information about a remote PC, including the last reboot time)*
+* Find computer information
+
+*(Displays information about a remote PC, including the last reboot time)*
+
+
 * Ping a device
+
+*(Displays a sub-menu after pinging, with options to copy the results, connect to that computer via CMRC, or use any of the other computer-based options)*
+
+
 * Get a list of all installed programs
 * Access a computer's filesystem
 
@@ -45,6 +53,5 @@ This can be useful if you want to customize the script & continually update it, 
 
 # To Do/In Progress:
 
-* Improved ping - provide computer-based options after pinging a device
 * Ability to cancel a ping or other commands without closing the entire script
 * Option to create batch files on end-user's computers - this is to provide them with the "User Command Tools" without connecting to their computer, allowing them to run local troubleshooting options themselves (https://github.com/Justin-Lund/IT-Support-Batch-Files/)

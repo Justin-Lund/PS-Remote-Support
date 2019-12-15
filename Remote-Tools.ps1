@@ -1,55 +1,24 @@
 ######################################################### 
-#         Powershell Remote Support Tool V1.2           # 
+#         Powershell Remote Support Tool V1.3           # 
 #                Created By: Justin Lund                # 
 #             https://github.com/Justin-Lund/           # 
 ######################################################### 
 
-Set-ExecutionPolicy Bypass
-$host.ui.RawUI.WindowTitle = “Remote Support Tools”
+$Host.UI.RawUI.WindowTitle = “Remote Support Tools”
+
+# Set path to CMRC here
+$CMRCPath = "C:\SCCM 2012 - Remote Control App\CmRcViewer.exe"
 
 
-function Get-Menu {     
-    Clear-Host 
-    "  /----------------------\" 
-    "  |     REMOTE TOOLS     |" 
-    "  \----------------------/" 
-    ""
-    "1) Launch CMRC"
-    "2) Launch Active Directory"
-    "3) Launch PowerShell"
-    ""
+#--------------Technical Functions--------------#
 
-    "4) Find User Account Information" 
-    "5) Check Currently Logged On User"
-    "6) Find Computer Information"
-    ""
-
-    "7) Get List of Installed Programs"
-    "8) Access C:\ of Remote Computer"
-    "9) Ping a Device"
-    
-    "10) Invoke Group Policy Update"
-    "11) Map Network Drive"
-    "12) Fix Printer Issues"
-    "13) Fix Failing Updates"
-    ""
-
-    "X) Exit The program"
-    ""
-
-    $MenuSelection = Read-Host "Enter Selection" 
-    Get-MenuBackend
-} 
-
-
-function Pause ($Message="Press any key to continue..."){ 
+Function Pause ($Message="Press any key to continue..."){ 
     "" 
     Write-Host $Message 
     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") 
 }  
 
-
-function Test-Ping {
+Function Test-Ping {
 #Ensure computer is online/accessible
 ping $ComputerName -n 1 | Out-Null
 if ($LASTEXITCODE -eq 0)
@@ -63,8 +32,7 @@ Else
     }
 }
 
-
-function Test-User {
+Function Test-User {
 #Verify Username
 $Username = Get-ADUser -LDAPFilter "(sAMAccountName=$Username)"
 If ($Username -eq $Null)
@@ -79,8 +47,7 @@ Else
     }
 }
 
-
-function Test-UserProfile {
+Function Test-UserProfile {
     $PathTest = Invoke-Command -Computer $ComputerName -ScriptBlock {Test-Path "C:\Users\$Using:Username"}
     If ($PathTest -eq $True)
         {
@@ -96,8 +63,7 @@ function Test-UserProfile {
     }
 }
 
-
-function Test-DriveLetter {
+Function Test-DriveLetter {
 
     $RegPathHKU = "HKU:\$SID\Network\$NetworkDriveLetter"
     $RegPathTest = Invoke-Command -Computer $ComputerName -ScriptBlock {New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null; Test-Path "$Using:RegPathHKU"; Remove-PSDrive HKU}
@@ -116,8 +82,7 @@ function Test-DriveLetter {
     }
 }
 
-
-function YN-Prompt {
+Function Prompt-YesNo {
     $Confirmation = Read-Host "[Y/N]"
     While ($Confirmation -ne "Y")
     {
@@ -138,8 +103,7 @@ function YN-Prompt {
     #If user typed Y, proceed
 }  
 
-
-function User-Logout {
+Function User-Logout {
     $LogoutSession = {
          $ErrorActionPreference = 'Stop'
  
@@ -173,8 +137,7 @@ function User-Logout {
     Invoke-Command -Computer $ComputerName -ScriptBlock $LogoutSession
 }
 
-
-function Create-NetworkShare {
+Function Create-NetworkShare {
     #Create the registry entries for the network drive
 
     Invoke-Command -Computer $ComputerName -ScriptBlock {
@@ -197,264 +160,396 @@ function Create-NetworkShare {
 }
 
 
-function Get-MenuBackend { 
-    Clear-Host 
-    switch ($MenuSelection){ 
+############### Menu Functions ###############
 
+#--------------Application Openers--------------#
 
-        1 { #Launch CMRC 
-			start "C:\SCCM 2012 - Remote Control App\CmRcViewer.exe"
-			 
-            Get-Menu          
-          } 
+Function Launch-CMRC {
+    Start $CMRCPath
+    Get-Menu
+}
 
+Function Launch-CMRC-Direct {
+    Start $CMRCPath $ComputerName
+    Get-Menu
+}
 
-        2 { #Launch Active Directory
-            start C:\Windows\System32\dsa.msc
+Function Launch-AD {
+    Start "C:\Windows\System32\dsa.msc"
+    Get-Menu
+}
+
+Function Launch-PowerShell {
+    Start PowerShell
+    Get-Menu
+}
+
+Function Launch-RemoteExplorer {
 			
-            Get-Menu
-          } 
-           
-
-        3 { #Launch PowerShell
-            start PowerShell
-			
-            Get-Menu   
-          }
+    Invoke-Item \\$ComputerName\c$
+	Get-Menu
+}
 
 
-        4 { #Find User Account Information
-			$Username = Read-Host "Please enter a username"
-			""
-			
-            $LockedOutStatus = Get-ADUser $Username -Properties * | Select-Object LockedOut
-            $UserLockedOut = $LockedOutStatus.LockedOut
+#--------------Info Gathering--------------#
 
-            net user $Username /domain | findstr /i /c:"User name" /c:"Full Name" /c:"Comment" /c:"Account Active" /c:"Account Expires" /c:"Password Last Set" /c:"Password Expires" /c:"Password changeable" /c:"Last logon"
-			
-            Write-Host ""
+Function Get-UserInfo {
+    $Username = Read-Host "Please enter a username"
+    Write-Host ""
+
+    # Store status of whether or not user is locked out in a new variable
+    $LockedOutStatus = (Get-ADUser $Username -Properties LockedOut).LockedOut
+
+    # Display general user account information
+    net user $Username /domain | findstr /i /c:"User name" /c:"Full Name" /c:"Comment" /c:"Account Active" /c:"Account Expires" /c:"Password Last Set" /c:"Password Expires" /c:"Password changeable" /c:"Last logon"
+    Write-Host ""
 
 
-            If ($UserLockedOut -eq $True)
-                {
-                    Write-Host "User is locked out. Unlock the user?"
-                    YN-Prompt #Only continues if the user presses Y
+    If ($LockedOutStatus -eq $True)
+        {
+            Write-Host "User is locked out. Unlock the user?"
+            Prompt-YesNo # Only continues if the user presses Y
         
-                    Unlock-ADAccount -Identity $Username
-                    Write-Host "User unlocked."
-                }
+            Unlock-ADAccount -Identity $Username
+            Write-Host "User unlocked."
+        }
 
-            Else
-                {
-                    #If user was not locked out, continue
-                }
+    Else
+        {
+            # If user was not locked out, continue
+        }
 
 
-			Pause
-			Get-Menu
-          } 
-           
+    Pause
+    Get-Menu
+ }
 
-        5 { #Check Currently Logged On User
-			$ComputerName = Read-Host "Please enter a computer name or IP" 
-	
-			""
-			Test-Ping
+Function Get-CurrentUser {
 
-            gwmi -computer $ComputerName Win32_ComputerSystem | Format-Table @{Expression={$_.Username};Label="Current User"} 
+    gwmi -computer $ComputerName Win32_ComputerSystem | Format-Table @{Expression={$_.Username};Label="Current User"} 
 			
-            Pause 
-            Get-Menu        
-          } 
-           
+    Pause 
+    Get-Menu        
+}
 
-        6 { #Find Computer Information
-			$ComputerName = Read-Host "Please enter a computer name or IP" 
+Function Get-SystemInfo {
 
-            ""
-			Test-Ping
-
-            systeminfo /s $ComputerName | findstr /i /c:"Host Name" /c:"OS Name" /c:"OS Version" /c:"Original Install Date" /c:"System Boot Time" /c:"System Up Time" /c:"System Manufacturer" /c:"System Model" /c:"System Type" /c:"Total Physical Memory"
+    systeminfo /s $ComputerName | findstr /i /c:"Host Name" /c:"OS Name" /c:"OS Version" /c:"Original Install Date" /c:"System Boot Time" /c:"System Up Time" /c:"System Manufacturer" /c:"System Model" /c:"System Type" /c:"Total Physical Memory"
 			
-            Pause 
-            Get-Menu           
-          } 
-           
+    Pause 
+    Get-Menu         
+}
 
-        7 { #Get List of Installed Programs
-			$ComputerName = Read-Host "Please enter a computer name or IP" 
+Function Get-InstalledPrograms {
 
-			""
-            Test-Ping
-			
-			gwmi -computer $ComputerName Win32_Product | Sort-Object Name | Format-Table Name,Vendor,Version 
+	GWMI -Computer $ComputerName Win32_Product | Sort-Object Name | Format-Table Name,Vendor,Version 
 		
-            Pause 
-            Get-Menu
-          } 
-		  
+    Pause 
+    Get-Menu
+}
 
-        8 { #Access C:\ of Remote Computer"
-		    $ComputerName = Read-Host "Please enter a computer name or IP"
+Function Get-Ping {
 
-			""
-            Test-Ping
+    Ping $ComputerName | Tee-Object -Variable PingResults
+    Get-PingMenu
+}
+
+
+#--------------Pushes--------------#
+
+Function Push-GPUpdate {
 			
-            Invoke-Item \\$ComputerName\c$
+    Invoke-GPUpdate -Computer $ComputerName -Force
 			
-			Pause
-			Get-Menu
-          } 
+	Pause
+	Get-Menu
+}
 
-           
-        9 { #Ping a Device
-			$ComputerName = Read-Host "Please enter a computer name or IP" 	
-			""
+Function Push-NetworkDriveMapping {
 			
-            ping $ComputerName
-            Pause 
-            Get-Menu          
-          }         
-           
+    #Prompt User for SID, save as variable
+    $Username = Read-Host "Enter the username"
+    Test-User
+    Test-UserProfile
 
-        10 { #Invoke Group Policy Update
-			$ComputerName = Read-Host "Please enter a computer name or IP" 
-
-			""
-            Test-Ping
-			
-            Invoke-GPUpdate -Computer $ComputerName -Force
-            
-			Pause 
-            Get-Menu           
-          } 
+    #Get the SID
+    $SID = (Get-ADUser -Identity $Username | Select SID).SID.Value
 
 
-		11 { #Map Network Drive
-            $ComputerName = Read-Host "Enter the computer name"
-            
-            Test-Ping
-            
-            #Prompt User for SID, save as variable
-            $Username = Read-Host "Enter the username"
-            Test-User
-            Test-UserProfile
+    #Save the desired shared drive letter as a variable
+    do
+    {
+        $input="NotOK"
+        # Choose Drive letter
+        $NetworkDriveLetter = Read-Host "Choose a drive letter"
 
-            #Isolate the SID
-            $SID_Messy = Get-AdUser -identity $Username | Select SID
-            $SID = $SID_Messy.SID.Value
-
-
-            #Save the desired shared drive letter as a variable
-            do
-            {
-                $input="NotOK"
-                # Choose Drive letter
-                $NetworkDriveLetter = Read-Host "Choose a drive letter"
-
-                # Limit Drive Letter to one character
-                if ($NetworkDriveLetter -notmatch "^[A,B,D-Z]$")
-                {
-                    Write-Host ""
-                    Write-Host "Please choose a drive letter" -ForegroundColor Red
-                    Write-Host ""
-                    $input="NotOK"
-                }
-
-                else
-                {
-                    $input="ok"
-                }
-            }
-            while($input -ne "ok")
-
-            #Convert any input to Upper Case
-            $NetworkDriveLetter = $NetworkDriveLetter.ToUpper()
-
-            #Set the Registry Path
-            $RegistryPath = "HKEY_USERS\$SID\Network\$NetworkDriveLetter"
-            Test-DriveLetter
-
-
-            #Save the desired network path as a variable
-            $NetworkPath = Read-Host "Enter the FULL network path - eg. \\domain.loc\etc"
-            
-
+        # Limit Drive Letter to one character
+        if ($NetworkDriveLetter -notmatch "^[A,B,D-Z]$")
+        {
             Write-Host ""
+            Write-Host "Please choose a drive letter" -ForegroundColor Red
+            Write-Host ""
+            $input="NotOK"
+        }
+
+        else
+        {
+            $input="ok"
+        }
+    }
+    while($input -ne "ok")
+
+    #Convert any input to Upper Case
+    $NetworkDriveLetter = $NetworkDriveLetter.ToUpper()
+
+    #Set the Registry Path
+    $RegistryPath = "HKEY_USERS\$SID\Network\$NetworkDriveLetter"
+    Test-DriveLetter
 
 
-            Create-NetworkShare
-
-            #Logout confirmation
-            Write-Host "The user must log out for the drive to show up. Log user out? [Y/N]"
+    #Save the desired network path as a variable
+    $NetworkPath = Read-Host "Enter the FULL network path - eg. \\domain.loc\etc"
             
-            YN-Prompt #Only continues if the user presses Y
-            User-Logout
 
-			Pause
-			Get-Menu
-          }
+    Write-Host ""
+    Create-NetworkShare
 
-
-        12 { #Fix Printer Issues
-			$ComputerName = Read-Host "Please enter a computer name or IP" 
-
-			""
-			Test-Ping
-
-			Invoke-Command -ComputerName $ComputerName -ScriptBlock {Stop-Service "spooler"; Remove-Item -Path "C:\Windows\System32\spool\PRINTERS\*" -Recurse; Start-Service "spooler"}
-			
-            Pause 
-            Get-Menu           
-          } 
-		  
-
-        13 { #Fix Failing Updates
-			$ComputerName = Read-Host "Please enter a computer name or IP"
-
-			""
-            Test-Ping
-			
-            Invoke-Command -ComputerName $ComputerName -ScriptBlock {Stop-Service "wuauserv"; Stop-Service "CcmExec"; Remove-Item -Path "C:\Windows\SoftwareDistribution\*" -Recurse ; Start-Service "wuauserv"; Start-Service "CcmExec"}
+    #Logout confirmation
+    Write-Host "The user must log out for the drive to show up. Log user out? [Y/N]"
             
-			Pause 
-            Get-Menu           
-          } 
-		            
+    Prompt-YesNo #Only continues if the user presses Y
+    User-Logout
 
-         GitHub {
-                 start "http://www.github.com/Justin-Lund"
-                 Get-Menu
-                }
+	Pause
+	Get-Menu
+}
 
+Function Push-PrinterFix {
+	#Fixes printer issues by restarting the printer spooler service & clearing printer cache
 
-         #Colours
-         Barney {
-                 $Host.UI.RawUI.BackgroundColor = "DarkMagenta" 
-                 $Host.UI.RawUI.ForegroundColor = "Green"
-                 Get-Menu
-                 }
-				 
-         Matrix {
-                 $Host.UI.RawUI.BackgroundColor = "Black"
-                 $Host.UI.RawUI.ForegroundColor = "Green"
-                 Get-Menu
-                 }				 
+	Invoke-Command -ComputerName $ComputerName -ScriptBlock {Stop-Service "spooler"; Remove-Item -Path "C:\Windows\System32\spool\PRINTERS\*" -Recurse; Start-Service "spooler"}
+			
+        Pause 
+	Get-Menu
+}
 
-         Standard {
-                 $Host.UI.RawUI.BackgroundColor = "DarkBlue"
-                 $Host.UI.RawUI.ForegroundColor = "White"
-                 Get-Menu
-                 }	
+Function Push-UpdateFix {
+    #Fixes failing updates by clearing the Software Distribution folder and stopping the relevant services to do so
+
+	Invoke-Command -ComputerName $ComputerName -ScriptBlock {Stop-Service "wuauserv"; Stop-Service "CcmExec"; Remove-Item -Path "C:\Windows\SoftwareDistribution\*" -Recurse ; Start-Service "wuauserv"; Start-Service "CcmExec"}
+	
+	Pause 
+	Get-Menu
+}
 
 
-        x {Clear-Host; exit}
+#--------------Extras/Unlisted Options--------------#
 
-        default{Get-Menu}
+Function Launch-GitHub {
+    start "http://www.github.com/Justin-Lund"
+    Get-Menu
+}
+
+Function Colour-Standard {
+    $Host.UI.RawUI.BackgroundColor = "DarkBlue"
+    $Host.UI.RawUI.ForegroundColor = "White"
+    Get-Menu
+}
+
+Function Colour-Matrix {
+    $Host.UI.RawUI.BackgroundColor = "Black"
+    $Host.UI.RawUI.ForegroundColor = "Green"
+    Get-Menu
+}
+
+Function Colour-Barney {
+    $Host.UI.RawUI.BackgroundColor = "DarkMagenta" 
+    $Host.UI.RawUI.ForegroundColor = "Green"
+    Get-Menu
+}
+
+
+#--------------Main Menu--------------#
+
+Function Get-Menu {     
+    Clear-Host 
+    "  /----------------------\" 
+    "  |   REMOTE TOOLS v1.3  |" 
+    "  \----------------------/" 
+    ""
+    "1) Launch CMRC"
+    "2) Launch Active Directory"
+    "3) Launch PowerShell"
+    ""
+
+    "4) Find User Account Information" 
+    "5) Check Currently Logged On User"
+    "6) Find Computer Information"
+    ""
+
+    "7) Get List of Installed Programs"
+    "8) Access C:\ of Remote Computer"
+    "9) Ping a Device"
+    
+    "10) Invoke Group Policy Update"
+    "11) Map Network Drive"
+    "12) Fix Printer Issues"
+    "13) Fix Failing Updates"
+    ""
+    "X) Exit The program"
+    ""
+
+    $MenuSelection = Read-Host "Enter Selection" 
+    Get-MenuBackend
+} 
+
+Function Get-MenuBackend { 
+    Clear-Host 
+
+    Switch ($MenuSelection){ 
+
+        1 {Launch-CMRC} 
+        2 {Launch-AD}
+        3 {Launch-PowerShell}
+        4 {Get-UserInfo}
+
+        # Find Current Logged On User
+        5 {
+        $ComputerName = Read-Host "Please enter a computer name or IP" 
+        Write-Host ""
+        Test-Ping
+
+        Get-CurrentUser
+        }
+
+        # Find Computer Information
+        6 {
+        $ComputerName = Read-Host "Please enter a computer name or IP" 
+        Write-Host ""
+        Test-Ping
+
+        Get-SystemInfo
+        }
+
+        # List Installed Programs On Computer
+        7 {
+        $ComputerName = Read-Host "Please enter a computer name or IP" 
+        Write-Host ""
+        Test-Ping
+
+        Get-InstalledPrograms
+        }
+
+        # Launch File Explorer on Remote Computer
+        8 {
+        $ComputerName = Read-Host "Please enter a computer name or IP" 
+        Write-Host ""
+        Test-Ping
+        
+        Launch-RemoteExplorer
+        }
+
+        # Ping a Computer
+        9 {
+        $ComputerName = Read-Host "Please enter a computer name or IP" 
+                
+        Get-Ping
+        }
+
+        # Force a Group Policy Update
+        10 {
+        $ComputerName = Read-Host "Please enter a computer name or IP" 
+        Write-Host ""
+        Test-Ping
+        
+        Push-GPUpdate
+        }
+
+        # Remotely Map a Network Drive
+        11 {
+        $ComputerName = Read-Host "Please enter a computer name or IP" 
+        Write-Host ""
+        Test-Ping
+             
+        Push-NetworkDriveMapping
+        }
+
+        # Fix Printer Issues
+        12 {
+        $ComputerName = Read-Host "Please enter a computer name or IP" 
+        Write-Host ""
+        Test-Ping
+
+        Push-PrinterFix
+        }
+
+        # Fix Failing Updates
+        13 {
+        $ComputerName = Read-Host "Please enter a computer name or IP" 
+        Write-Host ""
+        Test-Ping
+
+        Push-UpdateFix
+        }
+
+        GitHub {Launch-GitHub}
+
+        Barney {Colour-Barney}
+        Matrix {Colour-Matrix}
+        Standard {Colour-Standard}
+
+        X {Clear-Host; Exit}
+        Default {Get-Menu}                 
       }
 	  
 }
 
 
-#--------------Start Main--------------
+#--------------Post-Ping Menu--------------#
+
+Function Get-PingMenu {     
+    ""
+    "0) Return to Main Menu"
+    "1) Connect to Computer via CMRC"
+    "2) Copy Ping Results to Clipboard"
+    "3) Access C:\ of Computer"
+    "4) Check Currently Logged On User"
+    "5) Find Computer Information"
+    "6) Get List of Installed Programs"
+    "7) Invoke Group Policy Update"
+    "8) Map Network Drive"
+    "9) Ping It Again"
+    "10) Fix Printer Issues"
+    "11) Fix Failing Updates"
+    ""
+    $MenuSelection = Read-Host "Enter Selection" 
+    Get-PingMenuBackend
+}
+
+Function Get-PingMenuBackend { 
+
+    Switch ($MenuSelection){ 
+
+        0 {Get-Menu} # Return to main menu
+        1 {Launch-CMRC-Direct}
+        2 {Set-Clipboard -Value $PingResults; Get-Menu}
+        3 {Launch-RemoteExplorer}
+        4 {Clear-Host; Get-CurrentUser}
+        5 {Clear-Host; Get-SystemInfo}
+        6 {Clear-Host; Get-InstalledPrograms}
+        7 {Clear-Host; Push-GPUpdate}
+        8 {Clear-Host; Push-NetworkDriveMapping}
+        9 {Clear-Host; Get-Ping}
+        10 {Clear-Host; Push-PrinterFix}
+        11 {Clear-Host; Push-UpdateFix}
+
+        X {Clear-Host; Exit}
+        Default {Clear-Host; Get-PingMenu}                 
+      }
+	  
+}
+
+
+#--------------Start Main--------------#
+
 Get-Menu

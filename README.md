@@ -1,4 +1,4 @@
-# IT Support PowerShell Script v1.3
+# IT Support PowerShell Script v1.4.1
 *PowerShell Script for Remote Support & Administration*
 
 This script assists with user & computer administration, launching programs, & remote troubleshooting.
@@ -40,6 +40,8 @@ If your company doesn't use CMRC for remote support, you can replace that option
 * Fix failing updates
 
 *This option will fix failing SCCM Software Center updates on a user's computer by stopping the services wuauserv & ccmexec, clearing out C:\Windows\SoftwareDistribution, and restarting the services.*
+
+* Transfer User Command Tools batch file to user's computer (https://github.com/Justin-Lund/IT-Support-Batch-Files/) - this tool gives the user some local troubleshooting options
 
 
 # Instructions

@@ -1,21 +1,28 @@
 ######################################################### 
-#         Powershell Remote Support Tool V1.3           # 
+#       Powershell Remote Support Tool V1.4.1           # 
 #                Created By: Justin Lund                # 
 #             https://github.com/Justin-Lund/           # 
 ######################################################### 
 
-$Host.UI.RawUI.WindowTitle = “Remote Support Tools”
+# Due to the length of some of these functions, this script is best viewed in PowerShell ISE
+# Press Ctrl + M to collapse all functions for easy navigation
 
-# Set path to CMRC here
+
+#****************** Set path to CMRC here ******************#
 $CMRCPath = "C:\SCCM 2012 - Remote Control App\CmRcViewer.exe"
+#****************** --------------------- ******************#
 
+
+# Sets Window Title
+$Host.UI.RawUI.WindowTitle = “Remote Support Tools”
 
 #--------------Technical Functions--------------#
 
 Function Pause ($Message="Press any key to continue..."){ 
     "" 
     Write-Host $Message 
-    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") 
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    Clear-Host
 }  
 
 Function Test-Ping {
@@ -155,7 +162,6 @@ Function Create-NetworkShare {
         echo n | Reg Add $Using:RegistryPath /v ProviderName /t REG_SZ /d "Microsoft Windows Network" | Out-Null
         echo n | Reg Add $Using:RegistryPath /v ProviderType /t REG_DWORD /d 131072 | Out-Null
         echo n | Reg Add $Using:RegistryPath /v UserName /t REG_DWORD /d 0 | Out-Null
-        Write-Host ""
     }
 }
 
@@ -171,7 +177,6 @@ Function Launch-CMRC {
 
 Function Launch-CMRC-Direct {
     Start $CMRCPath $ComputerName
-    Get-Menu
 }
 
 Function Launch-AD {
@@ -186,8 +191,7 @@ Function Launch-PowerShell {
 
 Function Launch-RemoteExplorer {
 			
-    Invoke-Item \\$ComputerName\c$
-	Get-Menu
+    Invoke-Item \\$ComputerName\C$
 }
 
 
@@ -221,31 +225,30 @@ Function Get-UserInfo {
 
 
     Pause
-    Get-Menu
  }
 
 Function Get-CurrentUser {
 
-    gwmi -computer $ComputerName Win32_ComputerSystem | Format-Table @{Expression={$_.Username};Label="Current User"} 
+    GWMI -Computer $ComputerName Win32_ComputerSystem | Format-Table @{Expression={$_.Username};Label="Current User"} 
 			
-    Pause 
-    Get-Menu        
+    Pause       
 }
 
 Function Get-SystemInfo {
 
-    systeminfo /s $ComputerName | findstr /i /c:"Host Name" /c:"OS Name" /c:"OS Version" /c:"Original Install Date" /c:"System Boot Time" /c:"System Up Time" /c:"System Manufacturer" /c:"System Model" /c:"System Type" /c:"Total Physical Memory"
+    SystemInfo /s $ComputerName | findstr /i /c:"Host Name" /c:"OS Name" /c:"OS Version" /c:"Original Install Date" /c:"System Boot Time" /c:"System Up Time" /c:"System Manufacturer" /c:"System Model" /c:"System Type" /c:"Total Physical Memory"
 			
-    Pause 
-    Get-Menu         
+    Pause      
 }
 
 Function Get-InstalledPrograms {
 
+    Write-Host "This may take a moment..."
+    Write-Host ""
+
 	GWMI -Computer $ComputerName Win32_Product | Sort-Object Name | Format-Table Name,Vendor,Version 
 		
     Pause 
-    Get-Menu
 }
 
 Function Get-Ping {
@@ -262,7 +265,6 @@ Function Push-GPUpdate {
     Invoke-GPUpdate -Computer $ComputerName -Force
 			
 	Pause
-	Get-Menu
 }
 
 Function Push-NetworkDriveMapping {
@@ -308,14 +310,14 @@ Function Push-NetworkDriveMapping {
 
 
     #Save the desired network path as a variable
-    $NetworkPath = Read-Host "Enter the FULL network path - eg. \\domain.loc\etc"
-            
-
     Write-Host ""
+    Write-Host "Enter the FULL network path"
+    $NetworkPath = Read-Host "eg. \\domain.loc\etc"
+
     Create-NetworkShare
 
     #Logout confirmation
-    Write-Host "The user must log out for the drive to show up. Log user out? [Y/N]"
+    Write-Host "The user must log out for the drive to show up. Log user out?"
             
     Prompt-YesNo #Only continues if the user presses Y
     User-Logout
@@ -325,28 +327,464 @@ Function Push-NetworkDriveMapping {
 }
 
 Function Push-PrinterFix {
-	#Fixes printer issues by restarting the printer spooler service & clearing printer cache
+    #Fixes printer issues by restarting the printer spooler service & clearing printer cache
 
 	Invoke-Command -ComputerName $ComputerName -ScriptBlock {Stop-Service "spooler"; Remove-Item -Path "C:\Windows\System32\spool\PRINTERS\*" -Recurse; Start-Service "spooler"}
 			
-        Pause 
-	Get-Menu
+    Pause
 }
 
 Function Push-UpdateFix {
     #Fixes failing updates by clearing the Software Distribution folder and stopping the relevant services to do so
 
 	Invoke-Command -ComputerName $ComputerName -ScriptBlock {Stop-Service "wuauserv"; Stop-Service "CcmExec"; Remove-Item -Path "C:\Windows\SoftwareDistribution\*" -Recurse ; Start-Service "wuauserv"; Start-Service "CcmExec"}
-	
-	Pause 
-	Get-Menu
+			
+    Pause
 }
 
+Function Push-UserCommandTools {
+    # Pushes the User Command Tools batch file to C:\Temp of the user's computer
+    # See https://github.com/Justin-Lund/IT-Support-Batch-Files for a full overview of this file
+
+    Write-Host "User Command Tools Batch File will be transferred to C:\Temp of $ComputerName"
+    Invoke-Command -Computer $ComputerName -ScriptBlock {
+
+    Set-Content "C:\Temp\User Command Tools 2.3.bat" @"
+@echo off
+:: User Command Tools 2.3
+:: https://github.com/Justin-Lund/
+
+:Start
+cls
+title User Command Tools 2.3
+c:
+cd\
+
+
+echo 1. Get I.P. Address
+echo 2. Get Computer System Information
+echo 3. Force Group Policy Update
+echo 4. Renew I.P. Address ^& Reset TCP/IP
+echo 5. Clear Internet Explorer Cache and Cookies
+echo 6. Clear Cached Credentials
+echo 7. Clear Skype Cache
+echo 8. Clear All Cache
+echo 9. Clear/Reset Everything
+echo.
+
+CHOICE /C 123456789 /M "Enter your choice:"
+
+IF ERRORLEVEL 9 GOTO ClearEverything
+IF ERRORLEVEL 8 GOTO ClearAllCache
+IF ERRORLEVEL 7 GOTO ClearSkypeCache
+IF ERRORLEVEL 6 GOTO ClearCachedCredentials
+IF ERRORLEVEL 5 GOTO ClearIECache
+IF ERRORLEVEL 4 GOTO IPRenew
+IF ERRORLEVEL 3 GOTO GPUpdate
+IF ERRORLEVEL 2 GOTO SystemInfo
+IF ERRORLEVEL 1 GOTO IPConfig
+
+
+:IPConfig
+cls
+title I.P. Configuration
+ipconfig|findstr /i /c:"Ethernet" /c:"Wireless" /c:"IPv4"
+
+echo.
+pause
+GOTO Start
+
+
+:SystemInfo
+cls
+title Computer System Information
+systeminfo|findstr /i /c:"Host Name" /c:"OS Name" /c:"OS Version" /c:"Original Install Date" /c:"System Boot Time" /c:"System Up Time" /c:"System Manufacturer" /c:"System Model" /c:"System Type" /c:"Total Physical Memory"
+
+echo.
+pause
+GOTO Start
+
+
+:GPUpdate
+cls
+title Forcing Group Policy Update
+
+echo n | gpupdate /force
+
+cls
+title Group Policy Update Complete
+
+echo Group Policy Update Complete.
+echo Please note that most changes will not take effect until you have rebooted.
+echo It is strongly recommended that you reboot now.
+
+echo.
+pause
+GOTO Start
+
+
+:IPRenew
+cls
+title Renewing I.P. Address ^& Resetting TCP/IP
+
+echo Releasing I.P. Address
+echo.
+
+ipconfig /release
+
+cls
+echo I.P. Address Released
+
+timeout /t 8
+cls
+
+echo Renewing I.P. Address
+ipconfig /renew
+
+cls
+echo I.P. Address Renewed
+
+echo.
+echo ************************************************
+echo.
+
+echo Flushing DNS
+
+ipconfig /flushdns
+
+echo.
+echo ************************************************
+echo.
+
+echo Resetting TCP/IP
+echo.
+
+netsh int ip reset
+netsh int ipv4 reset
+netsh int ipv6 reset
+echo.
+
+cls
+title I.P. Address Renewed ^& TCP/IP Reset
+echo IP Address Renewed ^& TCP/IP Reset
+
+echo.
+pause
+GOTO Start
+
+
+:ClearIECache
+cls
+title Clearing Internet Explorer Cache and Cookies
+
+echo Clearing Internet Explorer Cache and Cookies
+
+RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255 
+
+cls
+title Internet Explorer Cache and Cookies Cleared
+
+echo Internet Explorer cache and cookies cleared
+echo.
+pause
+GOTO Start
+
+
+:ClearCachedCredentials
+cls
+title Clearing Locally Cached Credentials
+
+echo Clearing Locally Cached Credentials
+
+cmdkey.exe /list > "%TEMP%\List.txt"
+findstr.exe Target "%TEMP%\List.txt" > "%TEMP%\tokensonly.txt"
+FOR /F "tokens=1,2 delims= " %%G IN (%TEMP%\tokensonly.txt) DO cmdkey.exe /delete:%%H
+del "%TEMP%\List.txt" /s /f /q
+del "%TEMP%\tokensonly.txt" /s /f /q
+
+cls
+title Locally Cached Credentials Cleared
+
+echo Credentials cleared
+
+echo.
+pause
+GOTO Start
+
+
+:ClearSkypeCache
+cls
+title Clearing Skype Cache
+
+Set /p Proceed=Proceeding will close Skype and Outlook. Ok to proceed? (Y/N)
+if /i "%Proceed%" Neq "Y" GOTO Start
+
+TaskKill /f /im "lync.exe"
+TaskKill /f /im "outlook.exe"
+cls
+echo y | rmdir %localappdata%\Microsoft\Office\13.0\Lync /s
+echo y | rmdir %localappdata%\Microsoft\Office\14.0\Lync /s
+echo y | rmdir %localappdata%\Microsoft\Office\15.0\Lync /s
+echo y | rmdir %localappdata%\Microsoft\Office\16.0\Lync /s
+
+cls
+Start lync.exe
+cls
+title Skype Cache Cleared
+
+echo Skype cache cleared
+echo.
+pause
+GOTO Start
+
+
+:ClearAllCache
+cls
+title Clearing All Cache
+
+Set /p Proceed=Proceeding will close Skype and Outlook. Ok to proceed? (Y/N)
+if /i "%Proceed%" Neq "Y" GOTO Start
+
+TaskKill /f /im "lync.exe"
+TaskKill /f /im "outlook.exe"
+cls
+echo y | rmdir %localappdata%\Microsoft\Office\13.0\Lync /s
+echo y | rmdir %localappdata%\Microsoft\Office\14.0\Lync /s
+echo y | rmdir %localappdata%\Microsoft\Office\15.0\Lync /s
+echo y | rmdir %localappdata%\Microsoft\Office\16.0\Lync /s
+
+cls
+
+echo ************************************************
+echo.
+echo Skype cache cleared
+echo.
+echo ************************************************
+
+echo.
+
+echo Clearing Internet Explorer Cache and Cookies
+echo.
+echo ************************************************
+echo.
+
+RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255 
+
+echo Cache and Cookies Cleared
+
+echo.
+echo ************************************************
+echo.
+echo Clearing Local Cache
+echo.
+echo ************************************************
+echo.
+
+cmdkey.exe /list > "%TEMP%\List.txt"
+findstr.exe Target "%TEMP%\List.txt" > "%TEMP%\tokensonly.txt"
+FOR /F "tokens=1,2 delims= " %%G IN (%TEMP%\tokensonly.txt) DO cmdkey.exe /delete:%%H
+del "%TEMP%\List.txt" /s /f /q
+del "%TEMP%\tokensonly.txt" /s /f /q
+
+cls
+title All Cache Cleared
+
+echo ************************************************
+echo.
+echo Credentials cleared
+echo.
+echo ************************************************
+
+echo.
+pause
+GOTO Start
+
+
+:ClearEverything
+
+cls
+title Clearing Everything
+
+Set /p Proceed=Proceeding will close Skype and Outlook. Ok to proceed? (Y/N)
+if /i "%Proceed%" Neq "Y" GOTO Start
+
+TaskKill /f /im "lync.exe"
+TaskKill /f /im "outlook.exe"
+cls
+echo y | rmdir %localappdata%\Microsoft\Office\13.0\Lync /s
+echo y | rmdir %localappdata%\Microsoft\Office\14.0\Lync /s
+echo y | rmdir %localappdata%\Microsoft\Office\15.0\Lync /s
+echo y | rmdir %localappdata%\Microsoft\Office\16.0\Lync /s
+
+cls
+
+echo ************************************************
+echo.
+echo Skype cache cleared
+echo.
+echo ************************************************
+
+echo.
+
+echo Clearing Internet Explorer Cache and Cookies
+echo.
+echo ************************************************
+echo.
+
+RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255 
+
+echo Cache and Cookies Cleared
+echo.
+echo ************************************************
+echo.
+echo Clearing Local Cache
+echo.
+echo ************************************************
+echo.
+
+cmdkey.exe /list > "%TEMP%\List.txt"
+findstr.exe Target "%TEMP%\List.txt" > "%TEMP%\tokensonly.txt"
+FOR /F "tokens=1,2 delims= " %%G IN (%TEMP%\tokensonly.txt) DO cmdkey.exe /delete:%%H
+del "%TEMP%\List.txt" /s /f /q
+del "%TEMP%\tokensonly.txt" /s /f /q
+
+cls
+Start lync.exe
+
+echo ************************************************
+echo.
+echo Credentials cleared
+echo.
+echo ************************************************
+
+echo.
+
+echo Releasing I.P. Address
+echo.
+echo ************************************************
+
+ipconfig /release
+echo.
+
+cls
+
+echo ************************************************
+echo.
+echo I.P. Address Released
+echo.
+echo ************************************************
+
+echo.
+timeout /t 8
+cls
+
+echo ************************************************
+echo.
+echo Renewing I.P. Address
+echo.
+echo ************************************************
+
+ipconfig /renew
+echo.
+
+cls
+
+echo ************************************************
+echo.
+echo IP Address Renewed
+echo.
+echo ************************************************
+echo.
+
+echo Flushing DNS
+echo.
+echo ************************************************
+
+ipconfig /flushdns
+
+echo.
+echo ************************************************
+echo.
+echo DNS Flushed
+echo.
+echo ************************************************
+
+echo.
+
+echo Resetting TCP/IP
+echo.
+echo ************************************************
+echo.
+
+netsh int ip reset
+netsh int ipv4 reset
+netsh int ipv6 reset
+
+cls
+
+echo ************************************************
+echo.
+echo TCP/IP Reset
+echo.
+echo ************************************************
+
+echo.
+
+echo Forcing Group Policy Update
+echo.
+echo ************************************************
+echo.
+
+echo n|gpupdate /force
+
+echo.
+echo ************************************************
+echo.
+echo Group Policy Update Completed
+echo.
+echo ************************************************
+
+Start lync.exe
+
+cls
+title Everything Cleared
+
+echo It is highly recommended that you reboot your computer now.
+echo.
+Set /p Proceed=Would you like to reboot now? (Y/N)
+if /i "%Proceed%" Neq "Y" GOTO Start
+
+timeout /t 5
+shutdown -f -r -t 0
+
+echo.
+pause
+exit
+
+"@
+    }
+    
+    Pause
+}
+  
 
 #--------------Extras/Unlisted Options--------------#
 
+Function List-Secrets {
+
+    Write-Host ""
+    Write-Host "Colours: Standard / Matrix / Barney"
+    Write-Host ""
+
+    Write-Host "GitHub: Open Script Creator's GitHub Page"
+    Write-Host ""
+        
+    Pause
+    Get-Menu
+}
+
 Function Launch-GitHub {
-    start "http://www.github.com/Justin-Lund"
+    Start "http://www.github.com/Justin-Lund"
     Get-Menu
 }
 
@@ -373,9 +811,9 @@ Function Colour-Barney {
 
 Function Get-Menu {     
     Clear-Host 
-    "  /----------------------\" 
-    "  |   REMOTE TOOLS v1.3  |" 
-    "  \----------------------/" 
+    "  /-----------------------\" 
+    "  |  REMOTE TOOLS v1.4.1  |" 
+    "  \-----------------------/" 
     ""
     "1) Launch CMRC"
     "2) Launch Active Directory"
@@ -392,9 +830,10 @@ Function Get-Menu {
     "9) Ping a Device"
     
     "10) Invoke Group Policy Update"
-    "11) Map Network Drive"
-    "12) Fix Printer Issues"
-    "13) Fix Failing Updates"
+    "11) Transfer User Command Tools"
+    "12) Map Network Drive"
+    "13) Fix Printer Issues"
+    "14) Fix Failing Updates"
     ""
     "X) Exit The program"
     ""
@@ -411,7 +850,7 @@ Function Get-MenuBackend {
         1 {Launch-CMRC} 
         2 {Launch-AD}
         3 {Launch-PowerShell}
-        4 {Get-UserInfo}
+        4 {Get-UserInfo; Get-Menu}
 
         # Find Current Logged On User
         5 {
@@ -420,6 +859,7 @@ Function Get-MenuBackend {
         Test-Ping
 
         Get-CurrentUser
+        Get-Menu
         }
 
         # Find Computer Information
@@ -429,6 +869,7 @@ Function Get-MenuBackend {
         Test-Ping
 
         Get-SystemInfo
+        Get-Menu
         }
 
         # List Installed Programs On Computer
@@ -438,6 +879,7 @@ Function Get-MenuBackend {
         Test-Ping
 
         Get-InstalledPrograms
+        Get-Menu
         }
 
         # Launch File Explorer on Remote Computer
@@ -447,6 +889,7 @@ Function Get-MenuBackend {
         Test-Ping
         
         Launch-RemoteExplorer
+        Get-Menu
         }
 
         # Ping a Computer
@@ -463,45 +906,60 @@ Function Get-MenuBackend {
         Test-Ping
         
         Push-GPUpdate
+        Get-Menu
+        }
+
+        # Transfer User Command Tools Batch File to C:\Temp of User's Computer
+        11 {
+        $ComputerName = Read-Host "Please enter a computer name or IP" 
+        Write-Host ""
+        Test-Ping
+        
+        Push-UserCommandTools
+        Get-Menu
         }
 
         # Remotely Map a Network Drive
-        11 {
+        12 {
         $ComputerName = Read-Host "Please enter a computer name or IP" 
         Write-Host ""
         Test-Ping
              
         Push-NetworkDriveMapping
+        Get-Menu
         }
 
         # Fix Printer Issues
-        12 {
-        $ComputerName = Read-Host "Please enter a computer name or IP" 
-        Write-Host ""
-        Test-Ping
-
-        Push-PrinterFix
-        }
-
-        # Fix Failing Updates
         13 {
         $ComputerName = Read-Host "Please enter a computer name or IP" 
         Write-Host ""
         Test-Ping
 
-        Push-UpdateFix
+        Push-PrinterFix
+        Get-Menu
         }
+
+        # Fix Failing Updates
+        14 {
+        $ComputerName = Read-Host "Please enter a computer name or IP" 
+        Write-Host ""
+        Test-Ping
+
+        Push-UpdateFix
+        Get-Menu
+        }
+
+        Secrets {List-Secrets}
 
         GitHub {Launch-GitHub}
 
         Barney {Colour-Barney}
         Matrix {Colour-Matrix}
         Standard {Colour-Standard}
-
+	
         X {Clear-Host; Exit}
         Default {Get-Menu}                 
       }
-	  
 }
 
 
@@ -512,15 +970,16 @@ Function Get-PingMenu {
     "0) Return to Main Menu"
     "1) Connect to Computer via CMRC"
     "2) Copy Ping Results to Clipboard"
-    "3) Access C:\ of Computer"
-    "4) Check Currently Logged On User"
-    "5) Find Computer Information"
-    "6) Get List of Installed Programs"
-    "7) Invoke Group Policy Update"
-    "8) Map Network Drive"
+    "3) Transfer User Command Tools"
+    "4) Access C:\ of Computer"
+    "5) Check Currently Logged On User"
+    "6) Find Computer Information"
+    "7) Get List of Installed Programs"
+    "8) Invoke Group Policy Update"
     "9) Ping It Again"
-    "10) Fix Printer Issues"
-    "11) Fix Failing Updates"
+    "10) Map Network Drive"
+    "11) Fix Printer Issues"
+    "12) Fix Failing Updates"
     ""
     $MenuSelection = Read-Host "Enter Selection" 
     Get-PingMenuBackend
@@ -531,22 +990,22 @@ Function Get-PingMenuBackend {
     Switch ($MenuSelection){ 
 
         0 {Get-Menu} # Return to main menu
-        1 {Launch-CMRC-Direct}
-        2 {Set-Clipboard -Value $PingResults; Get-Menu}
-        3 {Launch-RemoteExplorer}
-        4 {Clear-Host; Get-CurrentUser}
-        5 {Clear-Host; Get-SystemInfo}
-        6 {Clear-Host; Get-InstalledPrograms}
-        7 {Clear-Host; Push-GPUpdate}
-        8 {Clear-Host; Push-NetworkDriveMapping}
+        1 {Launch-CMRC-Direct; Clear-Host; Get-PingMenu}
+        2 {Set-Clipboard -Value $PingResults; Clear-Host; Get-PingMenu}
+        3 {Push-UserCommandTools; Get-PingMenu}
+        4 {Launch-RemoteExplorer; Clear-Host; Get-PingMenu}
+        5 {Clear-Host; Get-CurrentUser; Get-PingMenu}
+        6 {Clear-Host; Get-SystemInfo; Get-PingMenu}
+        7 {Clear-Host; Get-InstalledPrograms; Get-PingMenu}
+        8 {Clear-Host; Push-GPUpdate; Get-PingMenu}
         9 {Clear-Host; Get-Ping}
-        10 {Clear-Host; Push-PrinterFix}
-        11 {Clear-Host; Push-UpdateFix}
+        10 {Clear-Host; Push-NetworkDriveMapping; Get-PingMenu}
+        11 {Clear-Host; Push-PrinterFix; Get-PingMenu}
+        12 {Clear-Host; Push-UpdateFix; Get-PingMenu}
 
         X {Clear-Host; Exit}
         Default {Clear-Host; Get-PingMenu}                 
       }
-	  
 }
 
 

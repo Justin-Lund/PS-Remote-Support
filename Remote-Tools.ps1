@@ -1,10 +1,10 @@
 ######################################################### 
-#       Powershell Remote Support Tool V1.4.1           # 
+#       Powershell Remote Support Tool V1.5.1           # 
 #                Created By: Justin Lund                # 
 #             https://github.com/Justin-Lund/           # 
 ######################################################### 
 
-# Due to the length of some of these functions, this script is best viewed in PowerShell ISE
+# Due to the length of some of these functions, this script is best viewed & edited in the PowerShell ISE
 # Press Ctrl + M to collapse all functions for easy navigation
 
 
@@ -16,6 +16,7 @@ $CMRCPath = "C:\SCCM 2012 - Remote Control App\CmRcViewer.exe"
 # Sets Window Title
 $Host.UI.RawUI.WindowTitle = “Remote Support Tools”
 
+
 #--------------Technical Functions--------------#
 
 Function Pause ($Message="Press any key to continue..."){ 
@@ -26,32 +27,32 @@ Function Pause ($Message="Press any key to continue..."){
 }  
 
 Function Test-Ping {
-#Ensure computer is online/accessible
-ping $ComputerName -n 1 | Out-Null
-if ($LASTEXITCODE -eq 0)
-    {
-    }
-Else
-    {
-    Write-Host "Unable to reach computer"
-    Pause
-    Get-Menu
-    }
+    #Ensure computer is online/accessible
+    ping $ComputerName -n 1 | Out-Null
+    if ($LASTEXITCODE -eq 0)
+        {
+        }
+    Else
+        {
+        Write-Host "Unable to reach computer"
+        Pause
+        Get-Menu
+        }
 }
 
 Function Test-User {
-#Verify Username
-$Username = Get-ADUser -LDAPFilter "(sAMAccountName=$Username)"
-If ($Username -eq $Null)
-    {
-    Write-Host ""
-    Write-Host "User does not exist in AD"
-    Pause
-    Get-Menu
-    }
-Else
-    {
-    }
+    #Verify Username
+    $Username = Get-ADUser -LDAPFilter "(sAMAccountName=$Username)"
+    If ($Username -eq $Null)
+        {
+        Write-Host ""
+        Write-Host "User does not exist in AD"
+        Pause
+        Get-Menu
+        }
+    Else
+        {
+        }
 }
 
 Function Test-UserProfile {
@@ -149,19 +150,19 @@ Function Create-NetworkShare {
 
     Invoke-Command -Computer $ComputerName -ScriptBlock {
         #Create the registry key for the network share
-        echo n | Reg Add $Using:RegistryPath
+        Echo n | Reg Add $Using:RegistryPath
 
         #Set the network path value
-        echo n | Reg Add $Using:RegistryPath /v RemotePath /t REG_SZ /d $Using:NetworkPath | Out-Null
+        Echo n | Reg Add $Using:RegistryPath /v RemotePath /t REG_SZ /d $Using:NetworkPath | Out-Null
 
         #Set the remaining values
-        echo n | Reg Add $Using:RegistryPath /v ConnectFlags /t REG_DWORD /d 0 | Out-Null
-        echo n | Reg Add $Using:RegistryPath /v ConnectionType /t REG_DWORD /d 1 | Out-Null
-        echo n | Reg Add $Using:RegistryPath /v DeferFlags /t REG_DWORD /d 4 | Out-Null
-        echo n | Reg Add $Using:RegistryPath /v ProviderFlags /t REG_DWORD /d 1 | Out-Null
-        echo n | Reg Add $Using:RegistryPath /v ProviderName /t REG_SZ /d "Microsoft Windows Network" | Out-Null
-        echo n | Reg Add $Using:RegistryPath /v ProviderType /t REG_DWORD /d 131072 | Out-Null
-        echo n | Reg Add $Using:RegistryPath /v UserName /t REG_DWORD /d 0 | Out-Null
+        Echo n | Reg Add $Using:RegistryPath /v ConnectFlags /t REG_DWORD /d 0 | Out-Null
+        Echo n | Reg Add $Using:RegistryPath /v ConnectionType /t REG_DWORD /d 1 | Out-Null
+        Echo n | Reg Add $Using:RegistryPath /v DeferFlags /t REG_DWORD /d 4 | Out-Null
+        Echo n | Reg Add $Using:RegistryPath /v ProviderFlags /t REG_DWORD /d 1 | Out-Null
+        Echo n | Reg Add $Using:RegistryPath /v ProviderName /t REG_SZ /d "Microsoft Windows Network" | Out-Null
+        Echo n | Reg Add $Using:RegistryPath /v ProviderType /t REG_DWORD /d 131072 | Out-Null
+        Echo n | Reg Add $Using:RegistryPath /v UserName /t REG_DWORD /d 0 | Out-Null
     }
 }
 
@@ -171,11 +172,6 @@ Function Create-NetworkShare {
 #--------------Application Openers--------------#
 
 Function Launch-CMRC {
-    Start $CMRCPath
-    Get-Menu
-}
-
-Function Launch-CMRC-Direct {
     Start $CMRCPath $ComputerName
 }
 
@@ -190,7 +186,7 @@ Function Launch-PowerShell {
 }
 
 Function Launch-RemoteExplorer {
-			
+    Clear-Host		
     Invoke-Item \\$ComputerName\C$
 }
 
@@ -228,6 +224,7 @@ Function Get-UserInfo {
  }
 
 Function Get-CurrentUser {
+    Clear-Host
 
     GWMI -Computer $ComputerName Win32_ComputerSystem | Format-Table @{Expression={$_.Username};Label="Current User"} 
 			
@@ -235,6 +232,7 @@ Function Get-CurrentUser {
 }
 
 Function Get-SystemInfo {
+    Clear-Host
 
     SystemInfo /s $ComputerName | findstr /i /c:"Host Name" /c:"OS Name" /c:"OS Version" /c:"Original Install Date" /c:"System Boot Time" /c:"System Up Time" /c:"System Manufacturer" /c:"System Model" /c:"System Type" /c:"Total Physical Memory"
 			
@@ -242,16 +240,17 @@ Function Get-SystemInfo {
 }
 
 Function Get-InstalledPrograms {
-
+    Clear-Host
     Write-Host "This may take a moment..."
     Write-Host ""
 
-	GWMI -Computer $ComputerName Win32_Product | Sort-Object Name | Format-Table Name,Vendor,Version 
+    GWMI -Computer $ComputerName Win32_Product | Sort-Object Name | Format-Table Name,Vendor,Version 
 		
     Pause 
 }
 
 Function Get-Ping {
+    Clear-Host
 
     Ping $ComputerName | Tee-Object -Variable PingResults
     Get-PingMenu
@@ -261,24 +260,28 @@ Function Get-Ping {
 #--------------Pushes--------------#
 
 Function Push-GPUpdate {
-			
+    Clear-Host	
+    	
     Invoke-GPUpdate -Computer $ComputerName -Force
 			
 	Pause
 }
 
 Function Push-NetworkDriveMapping {
+    # Remotely maps a network drive for a user
+    
+    Clear-Host
 			
-    #Prompt User for SID, save as variable
+    # Prompt User for SID, save as variable
     $Username = Read-Host "Enter the username"
     Test-User
     Test-UserProfile
 
-    #Get the SID
+    # Get the SID
     $SID = (Get-ADUser -Identity $Username | Select SID).SID.Value
 
 
-    #Save the desired shared drive letter as a variable
+    # Save the desired shared drive letter as a variable
     do
     {
         $input="NotOK"
@@ -301,25 +304,25 @@ Function Push-NetworkDriveMapping {
     }
     while($input -ne "ok")
 
-    #Convert any input to Upper Case
+    # Convert any input to Upper Case
     $NetworkDriveLetter = $NetworkDriveLetter.ToUpper()
 
-    #Set the Registry Path
+    # Set the Registry Path
     $RegistryPath = "HKEY_USERS\$SID\Network\$NetworkDriveLetter"
     Test-DriveLetter
 
 
-    #Save the desired network path as a variable
+    # Save the desired network path as a variable
     Write-Host ""
     Write-Host "Enter the FULL network path"
     $NetworkPath = Read-Host "eg. \\domain.loc\etc"
 
     Create-NetworkShare
 
-    #Logout confirmation
+    # Logout confirmation
     Write-Host "The user must log out for the drive to show up. Log user out?"
             
-    Prompt-YesNo #Only continues if the user presses Y
+    Prompt-YesNo # Only continues if the user presses Y
     User-Logout
 
 	Pause
@@ -327,17 +330,27 @@ Function Push-NetworkDriveMapping {
 }
 
 Function Push-PrinterFix {
-    #Fixes printer issues by restarting the printer spooler service & clearing printer cache
+    # Fixes printer issues by restarting the printer spooler service & clearing printer cache
 
-	Invoke-Command -ComputerName $ComputerName -ScriptBlock {Stop-Service "spooler"; Remove-Item -Path "C:\Windows\System32\spool\PRINTERS\*" -Recurse; Start-Service "spooler"}
+    Clear-Host
+
+    Write-Host "If you see an error saying '" -NoNewLine
+    Write-Host "Cannot find path" -NoNewLine -ForegroundColor Red
+    Write-Host "'"
+    Write-Host "Don't worry, this is normal!"
+    Write-Host ""
+
+    Invoke-Command -ComputerName $ComputerName -ScriptBlock {Stop-Service "spooler"; Remove-Item -Path "C:\Windows\System32\spool\PRINTERS\*" -Recurse; Start-Service "spooler"}
 			
     Pause
 }
 
 Function Push-UpdateFix {
-    #Fixes failing updates by clearing the Software Distribution folder and stopping the relevant services to do so
+    # Fixes failing updates by clearing the Software Distribution folder and stopping the relevant services to do so
 
-	Invoke-Command -ComputerName $ComputerName -ScriptBlock {Stop-Service "wuauserv"; Stop-Service "CcmExec"; Remove-Item -Path "C:\Windows\SoftwareDistribution\*" -Recurse ; Start-Service "wuauserv"; Start-Service "CcmExec"}
+    Clear-Host
+
+    Invoke-Command -ComputerName $ComputerName -ScriptBlock {Stop-Service "wuauserv"; Stop-Service "CcmExec"; Remove-Item -Path "C:\Windows\SoftwareDistribution\*" -Recurse ; Start-Service "wuauserv"; Start-Service "CcmExec"}
 			
     Pause
 }
@@ -346,6 +359,8 @@ Function Push-UserCommandTools {
     # Pushes the User Command Tools batch file to C:\Temp of the user's computer
     # See https://github.com/Justin-Lund/IT-Support-Batch-Files for a full overview of this file
 
+    Clear-Host
+    
     Write-Host "User Command Tools Batch File will be transferred to C:\Temp of $ComputerName"
     Invoke-Command -Computer $ComputerName -ScriptBlock {
 
@@ -766,17 +781,17 @@ exit
     
     Pause
 }
-  
+     
 
 #--------------Extras/Unlisted Options--------------#
 
 Function List-Secrets {
-
     Write-Host ""
+
     Write-Host "Colours: Standard / Matrix / Barney"
     Write-Host ""
 
-    Write-Host "GitHub: Open Script Creator's GitHub Page"
+    Write-Host "GitHub: Opens GitHub page for this script"
     Write-Host ""
         
     Pause
@@ -784,7 +799,7 @@ Function List-Secrets {
 }
 
 Function Launch-GitHub {
-    Start "http://www.github.com/Justin-Lund"
+    Start "https://github.com/Justin-Lund/IT-Support-PowerShell-Files"
     Get-Menu
 }
 
@@ -810,9 +825,10 @@ Function Colour-Barney {
 #--------------Main Menu--------------#
 
 Function Get-Menu {     
-    Clear-Host 
+    Clear-Host
+
     "  /-----------------------\" 
-    "  |  REMOTE TOOLS v1.4.1  |" 
+    "  |  REMOTE TOOLS v1.5.1  |" 
     "  \-----------------------/" 
     ""
     "1) Launch CMRC"
@@ -825,17 +841,12 @@ Function Get-Menu {
     "6) Find Computer Information"
     ""
 
-    "7) Get List of Installed Programs"
-    "8) Access C:\ of Remote Computer"
+    "7) Transfer User Command Tools"
+    "8) Access Computer Menu"
     "9) Ping a Device"
-    
-    "10) Invoke Group Policy Update"
-    "11) Transfer User Command Tools"
-    "12) Map Network Drive"
-    "13) Fix Printer Issues"
-    "14) Fix Failing Updates"
     ""
-    "X) Exit The program"
+    
+    "X) Exit The Program"
     ""
 
     $MenuSelection = Read-Host "Enter Selection" 
@@ -846,8 +857,17 @@ Function Get-MenuBackend {
     Clear-Host 
 
     Switch ($MenuSelection){ 
+        
+        # Launch CMRC
+        1 {
+        $ComputerName = Read-Host "Please enter a computer name or IP" 
+        Write-Host ""
+        Test-Ping
+        
+        Launch-CMRC
+        Get-Menu
+        }
 
-        1 {Launch-CMRC} 
         2 {Launch-AD}
         3 {Launch-PowerShell}
         4 {Get-UserInfo; Get-Menu}
@@ -872,24 +892,24 @@ Function Get-MenuBackend {
         Get-Menu
         }
 
-        # List Installed Programs On Computer
+        # Transfer User Command Tools Batch File to C:\Temp of User's Computer
         7 {
         $ComputerName = Read-Host "Please enter a computer name or IP" 
         Write-Host ""
         Test-Ping
-
-        Get-InstalledPrograms
+        
+        Push-UserCommandTools
         Get-Menu
         }
 
-        # Launch File Explorer on Remote Computer
+        # Access Computer Menu
         8 {
         $ComputerName = Read-Host "Please enter a computer name or IP" 
+        $PingResults = $ComputerName
         Write-Host ""
         Test-Ping
-        
-        Launch-RemoteExplorer
-        Get-Menu
+
+        Get-CompMenu
         }
 
         # Ping a Computer
@@ -899,56 +919,6 @@ Function Get-MenuBackend {
         Get-Ping
         }
 
-        # Force a Group Policy Update
-        10 {
-        $ComputerName = Read-Host "Please enter a computer name or IP" 
-        Write-Host ""
-        Test-Ping
-        
-        Push-GPUpdate
-        Get-Menu
-        }
-
-        # Transfer User Command Tools Batch File to C:\Temp of User's Computer
-        11 {
-        $ComputerName = Read-Host "Please enter a computer name or IP" 
-        Write-Host ""
-        Test-Ping
-        
-        Push-UserCommandTools
-        Get-Menu
-        }
-
-        # Remotely Map a Network Drive
-        12 {
-        $ComputerName = Read-Host "Please enter a computer name or IP" 
-        Write-Host ""
-        Test-Ping
-             
-        Push-NetworkDriveMapping
-        Get-Menu
-        }
-
-        # Fix Printer Issues
-        13 {
-        $ComputerName = Read-Host "Please enter a computer name or IP" 
-        Write-Host ""
-        Test-Ping
-
-        Push-PrinterFix
-        Get-Menu
-        }
-
-        # Fix Failing Updates
-        14 {
-        $ComputerName = Read-Host "Please enter a computer name or IP" 
-        Write-Host ""
-        Test-Ping
-
-        Push-UpdateFix
-        Get-Menu
-        }
-
         Secrets {List-Secrets}
 
         GitHub {Launch-GitHub}
@@ -956,9 +926,66 @@ Function Get-MenuBackend {
         Barney {Colour-Barney}
         Matrix {Colour-Matrix}
         Standard {Colour-Standard}
-	
+
         X {Clear-Host; Exit}
         Default {Get-Menu}                 
+      }
+}
+
+
+#--------------Computer Menu--------------#
+
+Function Get-CompMenu {     
+    Clear-Host
+    "/-------------------------\" 
+    " Connected to $ComputerName"
+    "\-------------------------/"
+    ""
+    "0) Return to Main Menu"
+    ""
+    "1) Connect to Computer via CMRC"
+    "2) Copy Hostname to Clipboard"
+    "3) Transfer User Command Tools"
+    ""
+
+    "4) Access C:\ of Computer"
+    "5) Check Currently Logged On User"
+    "6) Find Computer Information"
+    ""
+
+    "7) Get List of Installed Programs"
+    "8) Invoke Group Policy Update"
+    "9) Ping Computer"
+    ""
+
+    "10) Map Network Drive"
+    "11) Fix Printer Issues"
+    "12) Fix Failing Updates"
+    ""
+    $MenuSelection = Read-Host "Enter Selection" 
+    Get-CompMenuBackend
+}
+
+Function Get-CompMenuBackend { 
+
+    Switch ($MenuSelection){ 
+
+        0 {Get-Menu} # Return to main menu
+        1 {Launch-CMRC; Clear-Host; Get-CompMenu}
+        2 {Set-Clipboard -Value $ComputerName; Get-CompMenu}
+        3 {Push-UserCommandTools; Get-CompMenu}
+        4 {Launch-RemoteExplorer; Get-CompMenu}
+        5 {Get-CurrentUser; Get-CompMenu}
+        6 {Get-SystemInfo; Get-CompMenu}
+        7 {Get-InstalledPrograms; Get-CompMenu}
+        8 {Clear-Host; Push-GPUpdate; Get-CompMenu}
+        9 {Get-Ping}
+        10 {Push-NetworkDriveMapping; Get-CompMenu}
+        11 {Push-PrinterFix; Get-CompMenu}
+        12 {Push-UpdateFix; Get-CompMenu}
+
+        X {Clear-Host; Exit}
+        Default {Clear-Host; Get-CompMenu}                 
       }
 }
 
@@ -968,18 +995,9 @@ Function Get-MenuBackend {
 Function Get-PingMenu {     
     ""
     "0) Return to Main Menu"
-    "1) Connect to Computer via CMRC"
+    "1) Open Computer Menu"
     "2) Copy Ping Results to Clipboard"
-    "3) Transfer User Command Tools"
-    "4) Access C:\ of Computer"
-    "5) Check Currently Logged On User"
-    "6) Find Computer Information"
-    "7) Get List of Installed Programs"
-    "8) Invoke Group Policy Update"
-    "9) Ping It Again"
-    "10) Map Network Drive"
-    "11) Fix Printer Issues"
-    "12) Fix Failing Updates"
+    "3) Ping It Again"
     ""
     $MenuSelection = Read-Host "Enter Selection" 
     Get-PingMenuBackend
@@ -990,21 +1008,12 @@ Function Get-PingMenuBackend {
     Switch ($MenuSelection){ 
 
         0 {Get-Menu} # Return to main menu
-        1 {Launch-CMRC-Direct; Clear-Host; Get-PingMenu}
-        2 {Set-Clipboard -Value $PingResults; Clear-Host; Get-PingMenu}
-        3 {Push-UserCommandTools; Get-PingMenu}
-        4 {Launch-RemoteExplorer; Clear-Host; Get-PingMenu}
-        5 {Clear-Host; Get-CurrentUser; Get-PingMenu}
-        6 {Clear-Host; Get-SystemInfo; Get-PingMenu}
-        7 {Clear-Host; Get-InstalledPrograms; Get-PingMenu}
-        8 {Clear-Host; Push-GPUpdate; Get-PingMenu}
-        9 {Clear-Host; Get-Ping}
-        10 {Clear-Host; Push-NetworkDriveMapping; Get-PingMenu}
-        11 {Clear-Host; Push-PrinterFix; Get-PingMenu}
-        12 {Clear-Host; Push-UpdateFix; Get-PingMenu}
+        1 {Test-Ping; Get-CompMenu}
+        2 {Set-Clipboard -Value $PingResults; Clear-Host; Echo $PingResults; Get-PingMenu}
+        3 {Clear-Host; Get-Ping}
 
         X {Clear-Host; Exit}
-        Default {Clear-Host; Get-PingMenu}                 
+        Default {Clear-Host; Get-Menu}                 
       }
 }
 

@@ -1,47 +1,37 @@
+
 # IT Support PowerShell Script v1.5.1
 *PowerShell Script for Remote Support & Administration*
 
 This script assists with user & computer administration, launching programs, & remote troubleshooting.
 
-The options to launch programs were added for environments where they need to be run with a separate administrator account. The script can be run once at the start of the day with your admin credentials, and left open to quickly launch other programs as admin without having to re-enter your credentials every time.
-If your company doesn't use CMRC for remote support, you can replace that option with whatever program you use, or remove it from the script.
-
+*The options to launch programs were added for environments where they need to be run with a separate administrator account. The script can be run once at the start of the day with your admin credentials, and left open to quickly launch other programs as admin without having to re-enter your credentials every time.
+If your company doesn't use CMRC for remote support, you can replace that option with whatever program you use, or remove it from the script.*
 
 ## Functions
-*All of the troubleshooting options work remotely, eliminating the need to remotely take control of a user's computer*
 
 * Launch CMRC, Active Directory, & PowerShell
-* Find user account information *(Displays information such as when a user's password expires)*
-
-*Gives you the option to unlock a user if they're currently showing as locked out*
-
 * See who's currently logged on to a computer
+* Find user account information *(Displays information such as when a user's password expires)*
+	- *Displays information such as when a user's password expires*
+	- *Gives you the option to unlock a user if they're currently showing as locked out*
 
 * Find computer information
-
-*(Displays information about a remote PC, including the last reboot time)*
-
-
-* Ping a device
-
-*(Displays a sub-menu after pinging, with options to copy the results, or open the computer menu)*
-
-
 * Get a list of all installed programs
-* Access a computer's filesystem
-
+* Access a computer's file system
+* Invoke group policy update
 * Map network drives
-* Invoke group policy updates
 
 * Fix printer issues
-
-*This option will stop the print spooler service, clear the local (for the target computer) printer cache, and restart the printer spooler service.*
+	- *This option will stop the print spooler service, clear the local (for the target computer) printer cache, and restart the printer spooler service.*
 
 * Fix failing updates
+	- *This option will fix failing SCCM Software Center updates on a user's computer by stopping the services wuauserv & ccmexec, clearing out C:\Windows\SoftwareDistribution, and restarting the services.*
 
-*This option will fix failing SCCM Software Center updates on a user's computer by stopping the services wuauserv & ccmexec, clearing out C:\Windows\SoftwareDistribution, and restarting the services.*
+* Transfer [User Command Tools batch file](https://github.com/Justin-Lund/IT-Support-Batch-Files/) to user's computer - this tool gives the user some local troubleshooting options
 
-* Transfer User Command Tools batch file to user's computer (https://github.com/Justin-Lund/IT-Support-Batch-Files/) - this tool gives the user some local troubleshooting options
+*All of the troubleshooting options work remotely, eliminating the need to remotely take control of a user's computer*
+
+![Remote Support Tools Main Menu](https://i.imgur.com/oNykOpA.png)
 
 
 # Instructions

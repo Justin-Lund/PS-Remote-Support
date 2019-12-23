@@ -21,13 +21,13 @@ If your company doesn't use CMRC for remote support, you can replace that option
 * Invoke group policy update
 * Map network drives
 
+* Transfer [User Command Tools batch file](https://github.com/Justin-Lund/IT-Support-Batch-Files/) to user's computer - this tool gives the user some local troubleshooting options
+
 * Fix printer issues
 	- *This option will stop the print spooler service, clear the local (for the target computer) printer cache, and restart the printer spooler service.*
 
 * Fix failing updates
 	- *This option will fix failing SCCM Software Center updates on a user's computer by stopping the services wuauserv & ccmexec, clearing out C:\Windows\SoftwareDistribution, and restarting the services.*
-
-* Transfer [User Command Tools batch file](https://github.com/Justin-Lund/IT-Support-Batch-Files/) to user's computer - this tool gives the user some local troubleshooting options
 
 *All of the troubleshooting options work remotely, eliminating the need to remotely take control of a user's computer*
 

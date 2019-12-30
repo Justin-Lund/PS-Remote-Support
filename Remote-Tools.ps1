@@ -1,5 +1,5 @@
 ######################################################### 
-#       Powershell Remote Support Tool V1.5.1           # 
+#       Powershell Remote Support Tool V1.5.2           # 
 #                Created By: Justin Lund                # 
 #             https://github.com/Justin-Lund/           # 
 ######################################################### 
@@ -194,19 +194,16 @@ Function Launch-RemoteExplorer {
 #--------------Info Gathering--------------#
 
 Function Get-UserInfo {
-    $Username = Read-Host "Please enter a username"
-    Write-Host ""
-
     # Store status of whether or not user is locked out in a new variable
     $LockedOutStatus = (Get-ADUser $Username -Properties LockedOut).LockedOut
 
     # Display general user account information
-    net user $Username /domain | findstr /i /c:"User name" /c:"Full Name" /c:"Comment" /c:"Account Active" /c:"Account Expires" /c:"Password Last Set" /c:"Password Expires" /c:"Password changeable" /c:"Last logon"
-    Write-Host ""
+    Net User $Username /domain | FindSTR /i /c:"User name" /c:"Full Name" /c:"Comment" /c:"Account Active" /c:"Account Expires" /c:"Password Last Set" /c:"Password Expires" /c:"Password changeable" /c:"Last logon"
 
-
+    # User lockout prompt
     If ($LockedOutStatus -eq $True)
         {
+            Write-Host ""
             Write-Host "User is locked out. Unlock the user?"
             Prompt-YesNo # Only continues if the user presses Y
         
@@ -787,14 +784,42 @@ exit
 
 Function List-Secrets {
     Write-Host ""
+    Write-Host "All) Connects to computer, displays system info,"
+    Write-Host "     and display currently logged on user & user info"
+    Write-Host ""
+
+    Write-Host "GitHub) Opens GitHub page for this script"
+    Write-Host ""
 
     Write-Host "Colours: Standard / Matrix / Barney"
     Write-Host ""
-
-    Write-Host "GitHub: Opens GitHub page for this script"
-    Write-Host ""
-        
+    Write-Host "----------------------"
+            
     Pause
+    Get-Menu
+}
+
+Function Mega-Launch {
+    # Connects to computer via CMRC, gets system info, finds currently logged on user, and displays that user's info
+    
+    $ComputerName = Read-Host "Please enter a computer name or IP" 
+    Write-Host ""
+    Test-Ping
+
+    Start $CMRCPath $ComputerName
+
+    Clear-Host
+
+    SystemInfo /s $ComputerName | FindSTR /i /c:"Host Name" /c:"OS Name" /c:"OS Version" /c:"Original Install Date" /c:"System Boot Time" /c:"System Up Time" /c:"System Manufacturer" /c:"System Model" /c:"System Type" /c:"Total Physical Memory"
+    Write-Host ""
+
+    # Get currently logged on user and split domain name & username into an array with the backslash as the delimeter, so that the username can be saved into a variable without the domain name
+    $Username = ((GWMI -Computer 127.0.0.1 Win32_ComputerSystem).Username) -Split '\\'
+    $Username = $Username[1]    
+
+    Write-Host "Currently logged on user:"
+    Get-UserInfo
+
     Get-Menu
 }
 
@@ -828,7 +853,7 @@ Function Get-Menu {
     Clear-Host
 
     "  /-----------------------\" 
-    "  |  REMOTE TOOLS v1.5.1  |" 
+    "  |  REMOTE TOOLS v1.5.2  |" 
     "  \-----------------------/" 
     ""
     "1) Launch CMRC"
@@ -920,6 +945,8 @@ Function Get-MenuBackend {
         }
 
         Secrets {List-Secrets}
+
+        All {Mega-Launch}
 
         GitHub {Launch-GitHub}
 

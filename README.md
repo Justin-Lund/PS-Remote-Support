@@ -35,7 +35,7 @@ If your company doesn't use CMRC for remote support, you can replace that option
 
 ![Remote Support Tools Main Menu](https://i.imgur.com/oNykOpA.png)
 
-![Remote Support Tools CMRC Launch](https://i.imgur.com/KSdVbH2.png)
+![Remote Support Tools CMRC Launch](https://i.imgur.com/bls4mEL.png)
 
 
 # Instructions

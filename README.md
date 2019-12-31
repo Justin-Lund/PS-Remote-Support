@@ -1,5 +1,5 @@
 
-# IT Support PowerShell Script v1.5.3
+# Remote Support Tools v1.5.3
 *PowerShell Script for Remote Support & Administration*
 
 This script assists with user & computer administration, launching programs, & remote troubleshooting.

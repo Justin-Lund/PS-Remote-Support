@@ -4,9 +4,6 @@
 
 This script assists with user & computer administration, launching programs, & remote troubleshooting.
 
-*The options to launch programs were added for environments where they need to be run with a separate administrator account. The script can be run once at the start of the day with your admin credentials, and left open to quickly launch other programs as admin without having to re-enter your credentials every time.
-If your company doesn't use CMRC for remote support, you can replace that option with whatever program you use, or remove it from the script.*
-
 ## Functions
 
 * Launch CMRC, Active Directory, & PowerShell
@@ -37,6 +34,9 @@ If your company doesn't use CMRC for remote support, you can replace that option
 
 ![Remote Support Tools CMRC Launch](https://i.imgur.com/bls4mEL.png)
 
+
+*The options to launch programs were added for environments where they need to be run with a separate administrator account. The script can be run once at the start of the day with your admin credentials, and left open to quickly launch other programs as admin without having to re-enter your credentials every time.
+If your company doesn't use CMRC for remote support, you can replace that option with whatever program you use, or remove it from the script.*
 
 # Instructions
 

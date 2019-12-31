@@ -814,7 +814,7 @@ Function Mega-Launch {
     Write-Host ""
 
     # Get currently logged on user and split domain name & username into an array with the backslash as the delimeter, so that the username can be saved into a variable without the domain name
-    $Username = ((GWMI -Computer 127.0.0.1 Win32_ComputerSystem).Username) -Split '\\'
+    $Username = ((GWMI -Computer $ComputerName Win32_ComputerSystem).Username) -Split '\\'
     $Username = $Username[1]    
 
     Write-Host "Currently logged on user:"

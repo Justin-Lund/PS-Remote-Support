@@ -7,7 +7,7 @@ This script assists with user & computer administration, launching programs, & r
 ## Functions
 
 * Launch CMRC, Active Directory, & PowerShell
-	- *Launching CMRC will also display the computer's systeminfo, and the user account info of the currently logged-in user.
+	- *Launching CMRC will also display the computer's systeminfo, and the user account info of the currently logged-in user.*
 	
 * See who's currently logged on to a computer
 * Find user account information *(Displays information such as when a user's password expires)*

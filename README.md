@@ -33,7 +33,7 @@ If your company doesn't use CMRC for remote support, you can replace that option
 
 *All of the troubleshooting options work remotely, eliminating the need to remotely take control of a user's computer*
 
-![Remote Support Tools Main Menu](https://i.imgur.com/oNykOpA.png)
+![Remote Support Tools Main Menu](https://i.imgur.com/DTEaB3k.png)
 
 ![Remote Support Tools CMRC Launch](https://i.imgur.com/bls4mEL.png)
 

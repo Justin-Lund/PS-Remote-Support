@@ -35,10 +35,12 @@ If your company doesn't use CMRC for remote support, you can replace that option
 
 ![Remote Support Tools Main Menu](https://i.imgur.com/oNykOpA.png)
 
+![Remote Support Tools CMRC Launch](https://i.imgur.com/KSdVbH2.png)
+
 
 # Instructions
 
-Edit the path for CMRC at the top of the script to point to your installation directory
+* Edit the path for CMRC at the top of the script to point to your installation directory
 
 There are 2 options to run the script:
 1) Set your execution policy to Unrestricted by running: **Set-ExecutionPolicy -ExecutionPolicy Unrestricted**

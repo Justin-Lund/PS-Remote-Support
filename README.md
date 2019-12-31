@@ -1,5 +1,5 @@
 
-# IT Support PowerShell Script v1.5.1
+# IT Support PowerShell Script v1.5.3
 *PowerShell Script for Remote Support & Administration*
 
 This script assists with user & computer administration, launching programs, & remote troubleshooting.
@@ -10,6 +10,8 @@ If your company doesn't use CMRC for remote support, you can replace that option
 ## Functions
 
 * Launch CMRC, Active Directory, & PowerShell
+	- *Launching CMRC will also display the computer's systeminfo, and the user account info of the currently logged-in user.
+	
 * See who's currently logged on to a computer
 * Find user account information *(Displays information such as when a user's password expires)*
 	- *Displays information such as when a user's password expires*
@@ -35,6 +37,8 @@ If your company doesn't use CMRC for remote support, you can replace that option
 
 
 # Instructions
+
+Edit the path for CMRC at the top of the script to point to your installation directory
 
 There are 2 options to run the script:
 1) Set your execution policy to Unrestricted by running: **Set-ExecutionPolicy -ExecutionPolicy Unrestricted**

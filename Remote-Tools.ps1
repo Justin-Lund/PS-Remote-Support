@@ -1,5 +1,5 @@
 ######################################################### 
-#       Powershell Remote Support Tool V1.5.2           # 
+#       Powershell Remote Support Tool V1.5.3           # 
 #                Created By: Justin Lund                # 
 #             https://github.com/Justin-Lund/           # 
 ######################################################### 
@@ -172,7 +172,20 @@ Function Create-NetworkShare {
 #--------------Application Openers--------------#
 
 Function Launch-CMRC {
+    # Connects to computer via CMRC, gets system info, finds currently logged on user, and displays that user's info
     Start $CMRCPath $ComputerName
+
+    Clear-Host
+
+    SystemInfo /s $ComputerName | FindSTR /i /c:"Host Name" /c:"OS Name" /c:"OS Version" /c:"Original Install Date" /c:"System Boot Time" /c:"System Up Time" /c:"System Manufacturer" /c:"System Model" /c:"System Type" /c:"Total Physical Memory"
+    Write-Host ""
+
+    # Get currently logged on user and split domain name & username into an array with the backslash as the delimeter, so that the username can be saved into a variable without the domain name
+    $Username = ((GWMI -Computer $ComputerName Win32_ComputerSystem).Username) -Split '\\'
+    $Username = $Username[1]    
+
+    Write-Host "Currently logged on user:"
+    Get-UserInfo
 }
 
 Function Launch-AD {
@@ -784,10 +797,6 @@ exit
 
 Function List-Secrets {
     Write-Host ""
-    Write-Host "All) Connects to computer, displays system info,"
-    Write-Host "     and display currently logged on user & user info"
-    Write-Host ""
-
     Write-Host "GitHub) Opens GitHub page for this script"
     Write-Host ""
 
@@ -796,30 +805,6 @@ Function List-Secrets {
     Write-Host "----------------------"
             
     Pause
-    Get-Menu
-}
-
-Function Mega-Launch {
-    # Connects to computer via CMRC, gets system info, finds currently logged on user, and displays that user's info
-    
-    $ComputerName = Read-Host "Please enter a computer name or IP" 
-    Write-Host ""
-    Test-Ping
-
-    Start $CMRCPath $ComputerName
-
-    Clear-Host
-
-    SystemInfo /s $ComputerName | FindSTR /i /c:"Host Name" /c:"OS Name" /c:"OS Version" /c:"Original Install Date" /c:"System Boot Time" /c:"System Up Time" /c:"System Manufacturer" /c:"System Model" /c:"System Type" /c:"Total Physical Memory"
-    Write-Host ""
-
-    # Get currently logged on user and split domain name & username into an array with the backslash as the delimeter, so that the username can be saved into a variable without the domain name
-    $Username = ((GWMI -Computer $ComputerName Win32_ComputerSystem).Username) -Split '\\'
-    $Username = $Username[1]    
-
-    Write-Host "Currently logged on user:"
-    Get-UserInfo
-
     Get-Menu
 }
 
@@ -853,7 +838,7 @@ Function Get-Menu {
     Clear-Host
 
     "  /-----------------------\" 
-    "  |  REMOTE TOOLS v1.5.2  |" 
+    "  |  REMOTE TOOLS v1.5.3  |" 
     "  \-----------------------/" 
     ""
     "1) Launch CMRC"
@@ -945,8 +930,6 @@ Function Get-MenuBackend {
         }
 
         Secrets {List-Secrets}
-
-        All {Mega-Launch}
 
         GitHub {Launch-GitHub}
 

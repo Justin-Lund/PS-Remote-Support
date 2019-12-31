@@ -23,7 +23,7 @@ This script assists with user & computer administration, launching programs, & r
 * Transfer [User Command Tools batch file](https://github.com/Justin-Lund/IT-Support-Batch-Files/) to user's computer - this tool gives the user some local troubleshooting options
 
 * Fix printer issues
-	- *This option will stop the print spooler service, clear the local (for the target computer) printer cache, and restart the printer spooler service.*
+	- *This option will stop the print spooler service, clear the target computer's printer cache, and restart the printer spooler service.*
 
 * Fix failing updates
 	- *This option will fix failing SCCM Software Center updates on a user's computer by stopping the services wuauserv & ccmexec, clearing out C:\Windows\SoftwareDistribution, and restarting the services.*

@@ -38,12 +38,4 @@ This script assists with user & computer administration, launching programs, & r
 *The options to launch programs were added for environments where they need to be run with a separate administrator account. The script can be run once at the start of the day with your admin credentials, and left open to quickly launch other programs as admin without having to re-enter your credentials every time.
 If your company doesn't use CMRC for remote support, you can replace that option with whatever program you use, or remove it from the script.*
 
-# Instructions
-
-* Edit the path for CMRC at the top of the script to point to your installation directory
-
-There are 2 options to run the script:
-1) Set your execution policy to Unrestricted by running: **Set-ExecutionPolicy -ExecutionPolicy Unrestricted**
-
-2) Save both the PowerShell script and the batch file, and use the batch file to launch the PowerShell script. Edit the batch file to point to wherever you save the PowerShell script. You can also have multiple people run off of the same script by saving the script on a network location, pointing the batch file to the script, and distributing it to multiple people.
-This can be useful if you want to customize the script & continually update it, so that the main script doesn't have to be redistributed after every update.
+* Be sure to edit the path for CMRC at the top of the script to point to your installation directory

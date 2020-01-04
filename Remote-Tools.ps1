@@ -17,7 +17,7 @@ $CMRCPath = "C:\SCCM 2012 - Remote Control App\CmRcViewer.exe"
 $Host.UI.RawUI.WindowTitle = “Remote Support Tools”
 
 
-#--------------Technical Functions--------------#
+############### Technical Functions ###############
 
 Function Pause ($Message="Press any key to continue..."){ 
     "" 
@@ -831,6 +831,8 @@ Function Colour-Barney {
     Get-Menu
 }
 
+
+############### Menus ###############
 
 #--------------Main Menu--------------#
 

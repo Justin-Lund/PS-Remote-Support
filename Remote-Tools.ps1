@@ -1,5 +1,5 @@
 ######################################################### 
-#       Powershell Remote Support Tool V1.5.3           # 
+#       Powershell Remote Support Tool V1.5.4           # 
 #                Created By: Justin Lund                # 
 #             https://github.com/Justin-Lund/           # 
 ######################################################### 
@@ -177,7 +177,7 @@ Function Launch-CMRC {
 
     Clear-Host
 
-    SystemInfo /s $ComputerName | FindSTR /i /c:"Host Name" /c:"OS Name" /c:"OS Version" /c:"Original Install Date" /c:"System Boot Time" /c:"System Up Time" /c:"System Manufacturer" /c:"System Model" /c:"System Type" /c:"Total Physical Memory"
+    SystemInfo /s $ComputerName | FindStr /i /c:"Host Name" /c:"OS Name" /c:"OS Version" /c:"Original Install Date" /c:"System Boot Time" /c:"System Up Time" /c:"System Manufacturer" /c:"System Model" /c:"System Type" /c:"Total Physical Memory"
     Write-Host ""
 
     # Get currently logged on user and split domain name & username into an array with the backslash as the delimeter, so that the username can be saved into a variable without the domain name
@@ -211,7 +211,7 @@ Function Get-UserInfo {
     $LockedOutStatus = (Get-ADUser $Username -Properties LockedOut).LockedOut
 
     # Display general user account information
-    Net User $Username /domain | FindSTR /i /c:"User name" /c:"Full Name" /c:"Comment" /c:"Account Active" /c:"Account Expires" /c:"Password Last Set" /c:"Password Expires" /c:"Password changeable" /c:"Last logon"
+    Net User $Username /domain | FindStr /i /c:"User name" /c:"Full Name" /c:"Comment" /c:"Account Active" /c:"Account Expires" /c:"Password Last Set" /c:"Password Expires" /c:"Password changeable" /c:"Last logon"
 
     # User lockout prompt
     If ($LockedOutStatus -eq $True)
@@ -244,7 +244,7 @@ Function Get-CurrentUser {
 Function Get-SystemInfo {
     Clear-Host
 
-    SystemInfo /s $ComputerName | findstr /i /c:"Host Name" /c:"OS Name" /c:"OS Version" /c:"Original Install Date" /c:"System Boot Time" /c:"System Up Time" /c:"System Manufacturer" /c:"System Model" /c:"System Type" /c:"Total Physical Memory"
+    SystemInfo /s $ComputerName | FindStr /i /c:"Host Name" /c:"OS Name" /c:"OS Version" /c:"Original Install Date" /c:"System Boot Time" /c:"System Up Time" /c:"System Manufacturer" /c:"System Model" /c:"System Type" /c:"Total Physical Memory"
 			
     Pause      
 }
@@ -797,6 +797,7 @@ exit
 
 Function List-Secrets {
     Write-Host ""
+    Write-Host "PW) Password Generator"
     Write-Host "GitHub) Opens GitHub page for this script"
     Write-Host ""
 
@@ -806,6 +807,16 @@ Function List-Secrets {
             
     Pause
     Get-Menu
+}
+
+Function Password-Generator {
+$LengthOfPasswords = Read-Host "Enter the desired password length"
+$NumberOfPasswords = Read-Host "Enter the number of passwords to generate"
+Write-Host ""
+for ($i=1; $i -le $NumberOfPasswords; $i++) {-Join ('abcdefghjkmnrstuvwxyzABCDEFGHJKLMNPRSTUVWXYZ23456789#%^*'.ToCharArray() | Get-Random -Count ($LengthOfPasswords - 1)) + -Join ('23456789'.ToCharArray() | Get-Random -Count 1)}
+
+Pause
+Get-Menu
 }
 
 Function Launch-GitHub {
@@ -840,7 +851,7 @@ Function Get-Menu {
     Clear-Host
 
     "  /-----------------------\" 
-    "  |  REMOTE TOOLS v1.5.3  |" 
+    "  |  REMOTE TOOLS v1.5.4  |" 
     "  \-----------------------/" 
     ""
     "1) Launch CMRC"
@@ -932,7 +943,7 @@ Function Get-MenuBackend {
         }
 
         Secrets {List-Secrets}
-
+	PW {Password-Generator}
         GitHub {Launch-GitHub}
 
         Barney {Colour-Barney}
@@ -1004,7 +1015,7 @@ Function Get-CompMenuBackend {
 
 #--------------Post-Ping Menu--------------#
 
-Function Get-PingMenu {     
+Function Get-PingMenu {
     ""
     "0) Return to Main Menu"
     "1) Open Computer Menu"

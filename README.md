@@ -1,5 +1,5 @@
 
-# Remote Support Tools v1.5.3
+# Remote Support Tools v1.5.4
 *PowerShell Script for Remote Support & Administration*
 
 This script assists with user & computer administration, launching programs, & remote troubleshooting.
@@ -19,6 +19,10 @@ This script assists with user & computer administration, launching programs, & r
 * Access a computer's file system
 * Invoke group policy update
 * Map network drives
+* Password Generator
+	- *Type PW to access the password generator*
+	
+*Type Secrets to view unlisted options*
 
 * Transfer [User Command Tools batch file](https://github.com/Justin-Lund/IT-Support-Batch-Files/) to user's computer - this tool gives the user some local troubleshooting options
 

@@ -812,7 +812,7 @@ Function List-Secrets {
 Function Password-Generator {
 $LengthOfPasswords = Read-Host "Enter the desired password length"
 $NumberOfPasswords = Read-Host "Enter the number of passwords to generate"
-Write-Host ""
+Clear-Host
 for ($i=1; $i -le $NumberOfPasswords; $i++) {-Join ('abcdefghjkmnrstuvwxyzABCDEFGHJKLMNPRSTUVWXYZ23456789#%^*'.ToCharArray() | Get-Random -Count ($LengthOfPasswords - 1)) + -Join ('23456789'.ToCharArray() | Get-Random -Count 1)}
 
 Pause

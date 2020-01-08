@@ -30,8 +30,9 @@ This script assists with user & computer administration, launching programs, & r
 * Fix failing updates
 	- *This option will fix failing SCCM Software Center updates on a user's computer by stopping the services wuauserv & ccmexec, clearing out C:\Windows\SoftwareDistribution, and restarting the services.*
 
+&nbsp;
 
-All of the troubleshooting options work remotely, eliminating the need to remotely take control of a user's computer*
+All of the troubleshooting options work remotely, eliminating the need to remotely take control of a user's computer
 
 **Type Secrets to view unlisted options**
 

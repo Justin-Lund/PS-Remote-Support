@@ -21,8 +21,6 @@ This script assists with user & computer administration, launching programs, & r
 * Map network drives
 * Password Generator
 	- *Type PW to access the password generator*
-	
-*Type Secrets to view unlisted options*
 
 * Transfer [User Command Tools batch file](https://github.com/Justin-Lund/IT-Support-Batch-Files/) to user's computer - this tool gives the user some local troubleshooting options
 
@@ -33,6 +31,8 @@ This script assists with user & computer administration, launching programs, & r
 	- *This option will fix failing SCCM Software Center updates on a user's computer by stopping the services wuauserv & ccmexec, clearing out C:\Windows\SoftwareDistribution, and restarting the services.*
 
 *All of the troubleshooting options work remotely, eliminating the need to remotely take control of a user's computer*
+
+*Type Secrets to view unlisted options*
 
 ![Remote Support Tools Main Menu](https://i.imgur.com/DTEaB3k.png)
 

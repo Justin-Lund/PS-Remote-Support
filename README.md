@@ -33,7 +33,7 @@ This script assists with user & computer administration, launching programs, & r
 
 All of the troubleshooting options work remotely, eliminating the need to remotely take control of a user's computer*
 
-*Type Secrets to view unlisted options*
+**Type Secrets to view unlisted options**
 
 ![Remote Support Tools Main Menu](https://i.imgur.com/DTEaB3k.png)
 

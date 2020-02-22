@@ -5,7 +5,7 @@
 This script assists with user & computer administration, launching programs, & remote troubleshooting.
 
 
-## Functions
+## Main Functions
 
 * Launch CMRC, Active Directory, & New PowerShell Windows
 	- Be sure to edit the path for CMRC at the top of the script to point to your installation directory
@@ -19,8 +19,6 @@ This script assists with user & computer administration, launching programs, & r
 
 * Find computer information (such as last reboot time)
 * Get a list of all installed programs
-* Access a computer's file system
-* Invoke group policy update
 * Map network drives
 
 * Transfer [User Command Tools batch file](https://github.com/Justin-Lund/IT-Support-Batch-Files/) to user's computer - this tool gives the user some local troubleshooting options
@@ -38,6 +36,8 @@ This script assists with user & computer administration, launching programs, & r
 
 All of the troubleshooting options work remotely, eliminating the need to remotely take control of a user's computer
 
+
+See the screenshots below for the full list of the script's functionalities
 
 ![Remote Support Tools Main Menu](https://i.imgur.com/DTEaB3k.png)
 

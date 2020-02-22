@@ -4,14 +4,12 @@
 
 This script assists with user & computer administration, launching programs, & remote troubleshooting.
 
-&nbsp;
-
-*Be sure to edit the path for CMRC at the top of the script to point to your installation directory*
 
 ## Functions
 
 * Launch CMRC, Active Directory, & New PowerShell Windows
 	- *Launching CMRC will also display the computer's systeminfo, and the user account info of the currently logged-in user.*
+	- Be sure to edit the path for CMRC at the top of the script to point to your installation directory
 	
 * See who's currently logged on to a computer
 * Find user account information *(Displays information such as when a user's password expires)*

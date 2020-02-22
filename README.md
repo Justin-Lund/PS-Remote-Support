@@ -34,3 +34,16 @@ All of the troubleshooting options work remotely, eliminating the need to remote
 ![Remote Support Tools Main Menu](https://i.imgur.com/MuiUMVU.png)
 
 ![Remote Support Tools Unlisted Options](https://i.imgur.com/p9FRgbc.png)
+
+
+## Editing the Script
+
+The script is separated into functions, and is best navigated in the PowerShell ISE, with the functions collapsed (Ctrl + M)
+
+Function descriptions have been added on the closing braces, for easy navigation when collapsed (see screenshot below)
+
+If you create a new function, you must add it to the "Get-MenuBackend" switch
+
+If you come up with something useful to add to the script, please feel free to send a pull request!
+
+![Remote Support Tools Powershell ISE](https://i.imgur.com/wJwG0JM.png)

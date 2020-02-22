@@ -9,7 +9,7 @@ All of the troubleshooting options work remotely, eliminating the need to remote
 ## Main Functions
 
 * Launch CMRC, Active Directory, & New PowerShell Windows
-	- Be sure to edit the path for CMRC at the top of the script to point to your installation directory
+	- *Be sure to edit the path for CMRC at the top of the script to point to your installation directory*
 	- *Launching CMRC will also display the computer's systeminfo, and the user account info of the currently logged-in user.*
 
 * Find user account information (such as password expiry date)
@@ -29,7 +29,7 @@ All of the troubleshooting options work remotely, eliminating the need to remote
 &nbsp;
 
 
-**See the screenshots below for the full list of the script's functionalities**
+**See the screenshots below for the full overview of the script's functionalities**
 
 ![Remote Support Tools Main Menu](https://i.imgur.com/MuiUMVU.png)
 

@@ -4,7 +4,9 @@
 
 This script assists with user & computer administration, launching programs, & remote troubleshooting.
 
-* Be sure to edit the path for CMRC at the top of the script to point to your installation directory
+&nbsp;
+
+*Be sure to edit the path for CMRC at the top of the script to point to your installation directory*
 
 ## Functions
 

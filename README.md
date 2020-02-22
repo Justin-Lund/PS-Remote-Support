@@ -17,7 +17,7 @@ This script assists with user & computer administration, launching programs, & r
 	- *Displays information such as when a user's password expires*
 	- *Gives you the option to unlock a user if they're currently showing as locked out*
 
-* Find computer information
+* Find computer information (such as last reboot time)
 * Get a list of all installed programs
 * Access a computer's file system
 * Invoke group policy update

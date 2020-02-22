@@ -4,6 +4,8 @@
 
 This script assists with user & computer administration, launching programs, & remote troubleshooting.
 
+* Be sure to edit the path for CMRC at the top of the script to point to your installation directory
+
 ## Functions
 
 * Launch CMRC, Active Directory, & New PowerShell Windows
@@ -41,6 +43,3 @@ All of the troubleshooting options work remotely, eliminating the need to remote
 ![Remote Support Tools CMRC Launch](https://i.imgur.com/bls4mEL.png)
 
 
-*If your company doesn't use CMRC for remote support, you can replace that option with whatever program you use, or remove it from the script.*
-
-* Be sure to edit the path for CMRC at the top of the script to point to your installation directory

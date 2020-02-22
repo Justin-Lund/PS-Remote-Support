@@ -1,12 +1,12 @@
 
-# Remote Support Tools v1.5.4
+# Remote Support Tools v1.6.0
 *PowerShell Script for Remote Support & Administration*
 
 This script assists with user & computer administration, launching programs, & remote troubleshooting.
 
 ## Functions
 
-* Launch CMRC, Active Directory, & PowerShell
+* Launch CMRC, Active Directory, & New PowerShell Windows
 	- *Launching CMRC will also display the computer's systeminfo, and the user account info of the currently logged-in user.*
 	
 * See who's currently logged on to a computer
@@ -19,8 +19,6 @@ This script assists with user & computer administration, launching programs, & r
 * Access a computer's file system
 * Invoke group policy update
 * Map network drives
-* Password Generator
-	- *Type PW to access the password generator*
 
 * Transfer [User Command Tools batch file](https://github.com/Justin-Lund/IT-Support-Batch-Files/) to user's computer - this tool gives the user some local troubleshooting options
 
@@ -30,11 +28,13 @@ This script assists with user & computer administration, launching programs, & r
 * Fix failing updates
 	- *This option will fix failing SCCM Software Center updates on a user's computer by stopping the services wuauserv & ccmexec, clearing out C:\Windows\SoftwareDistribution, and restarting the services.*
 
+* Password Generator
+	- *Type PW to access the password generator*
+
 &nbsp;
 
 All of the troubleshooting options work remotely, eliminating the need to remotely take control of a user's computer
 
-**Type Secrets to view unlisted options**
 
 ![Remote Support Tools Main Menu](https://i.imgur.com/DTEaB3k.png)
 

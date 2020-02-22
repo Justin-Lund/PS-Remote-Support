@@ -4,6 +4,7 @@
 
 This script assists with user & computer administration, launching programs, & remote troubleshooting.
 
+All of the troubleshooting options work remotely, eliminating the need to remotely take control of a user's computer.
 
 ## Main Functions
 
@@ -26,8 +27,6 @@ This script assists with user & computer administration, launching programs, & r
 	- *This option will fix failing SCCM Software Center updates on a user's computer by stopping the services wuauserv & ccmexec, clearing out C:\Windows\SoftwareDistribution, and restarting the services.*
 
 &nbsp;
-
-All of the troubleshooting options work remotely, eliminating the need to remotely take control of a user's computer
 
 
 **See the screenshots below for the full list of the script's functionalities**

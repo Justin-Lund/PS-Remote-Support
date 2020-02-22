@@ -33,6 +33,4 @@ All of the troubleshooting options work remotely, eliminating the need to remote
 
 ![Remote Support Tools Main Menu](https://i.imgur.com/MuiUMVU.png)
 
-![Remote Support Tools CMRC Launch](https://i.imgur.com/bls4mEL.png)
-
 ![Remote Support Tools Unlisted Options](https://i.imgur.com/p9FRgbc.png)

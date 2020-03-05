@@ -1,10 +1,10 @@
 ######################################################### 
-#       Powershell Remote Support Tool V1.6.0           # 
+#       Powershell Remote Support Tool V1.6.1           # 
 #                Created By: Justin Lund                # 
 #             https://github.com/Justin-Lund/           # 
 ######################################################### 
 
-$Version = "v1.6.0"
+$Version = "v1.6.1"
 
 #------------------ Set path to CMRC here ------------------#
 $CMRCPath = "C:\SCCM 2012 - Remote Control App\CmRcViewer.exe"
@@ -146,6 +146,12 @@ Function Create-NetworkShare {
     }
 
 } # Create network drive mapping via registry entries
+
+Function Divider {
+    Write-Host ""
+    Write-Host "------------------------------------------------------" -ForegroundColor Cyan
+    Write-Host ""
+} # Text Output Display Divider
 
 
 #--------------Testing Functions--------------#
@@ -390,7 +396,13 @@ Function Get-ADGroupOwner {
 
 Function Get-ADGroupList {
 
-    Get-ADPrincipalGroupMembership $Username | Select Name | Format-Table -AutoSize
+    (Get-ADPrincipalGroupMembership -Identity $Username).Name | Sort-Object
+
+    Pause
+    
+Function Get-ADGroupUsers {
+
+    Get-ADGroupMember -Identity $ADGroup -Recursive | Select Name | Format-Table -AutoSize
 
     Pause
 
@@ -950,6 +962,7 @@ Function List-Unlisted {
     Write-Host "ACL) Network Share Access Control List"
     Write-Host "ADO) Show AD Group Owner"
     Write-Host "ADL) Show List of User's AD Groups"
+    Write-Host "ADU) Show List of Users In an AD Group"
     Write-Host ""
 
     Write-Host "Azure) Check a computer's Azure Enrollment Status"
@@ -970,7 +983,7 @@ Function Password-Generator {
     
     Clear-Host
 
-    For ($i=1; $i -le $NumberOfPasswords; $i++) {
+    $Passwords = For ($i=1; $i -le $NumberOfPasswords; $i++) {
         
         # Set random characters to be added to the array
         -Join ('abcdefghjkmnrstuvwxyzABCDEFGHJKLMNPRSTUVWXYZ23456789'.ToCharArray() |
@@ -980,10 +993,16 @@ Function Password-Generator {
         Get-Random -Count ($LengthOfPasswords - 1)) + -Join ('23456789'.ToCharArray() | Get-Random -Count 1)
     }
 
+    Echo $Passwords
+
+    Set-Clipboard -Value $Passwords
+
+    Divider
+
+    Write-Host "Passwords copied to clipboards" -ForegroundColor Red
+
     Pause
     Get-Menu
-
-} # Password Generator
 
 
 #--------------Secret Options--------------#
@@ -1115,6 +1134,9 @@ Function Get-MenuBackend {
         # Get Network Share Access Control List
         ACL {$NetworkPath = Read-Host $NetworkPathMsg; Write-Host ""; Get-AccessControlList; Get-Menu}
 
+	# List Users of an AD Group
+        ADU {$ADGroup = Read-Host $ADGroupMsg; Get-ADGroupUsers; Get-Menu}
+	
         # Get Owner of AD Group
         ADO {$ADGroup = Read-Host $ADGroupMsg; Get-ADGroupOwner; Get-Menu}
         

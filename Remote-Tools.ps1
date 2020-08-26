@@ -399,7 +399,9 @@ Function Get-ADGroupList {
     (Get-ADPrincipalGroupMembership -Identity $Username).Name | Sort-Object
 
     Pause
-    
+
+} # Display list of user's AD groups
+
 Function Get-ADGroupUsers {
 
     Get-ADGroupMember -Identity $ADGroup -Recursive | Select Name | Format-Table -AutoSize
@@ -1003,7 +1005,8 @@ Function Password-Generator {
 
     Pause
     Get-Menu
-
+    
+} # Password Generator 
 
 #--------------Secret Options--------------#
 

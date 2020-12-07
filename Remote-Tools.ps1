@@ -408,7 +408,7 @@ Function Get-ADGroupUsers {
 
     Pause
 
-} # Display list of user's AD groups
+} # Display list of users in an AD group
 
 Function Get-AzureInfo {
 

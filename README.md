@@ -1,3 +1,10 @@
+# Note - No Longer Maintained
+
+This is no longer maintained. I have moved on from the support field to cyber security.
+
+Feel free to make new branches!
+
+&nbsp;
 
 # Remote Support Tools v1.6.1
 *PowerShell Script for Remote Support & Administration*
